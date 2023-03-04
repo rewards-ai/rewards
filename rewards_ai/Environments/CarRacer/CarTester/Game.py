@@ -135,7 +135,7 @@ class GameController:
 
         self.FPS = 15
         self.iterations = 0
-        self.track = pygame.image.load(Path(__file__).parent.joinpath(r"Assets\track_test_7.png"))
+        self.track = pygame.image.load(Path(__file__).parent.joinpath(r"Assets\track_test_4.png"))
 
         self.cars = cars
 

@@ -1,21 +1,28 @@
-import torch
 import random
 import numpy as np
 from collections import deque
 from rewards_ai.Model.DQN import QTrainer
+import torch
 
 MAX_MEMORY = 100000
 BATCH_SIZE = 1000
 
 
+def getModelPath():
+    return r"C:\Users\acer\Downloads\rl-platform-main (1)\rl-platform-main\rewards.ai\Tests\model\model.pth"
+
+
 class Agent:
-    def __init__(self, model, lr=0.001, epsilon=0.25, gamma=0.9):
+    def __init__(self, model, load_last_checkpoint, lr=0.001, epsilon=0.25, gamma=0.9):
         self.n_games = 0
         self.epsilon = epsilon
         self.lr = lr
         self.gamma = gamma
         self.memory = deque(maxlen=MAX_MEMORY)
         self.model = model
+        if load_last_checkpoint:
+            self.model.load_state_dict(torch.load(getModelPath()))
+            self.model.eval()
         self.trainer = QTrainer(self.model, lr=self.lr, gamma=self.gamma)
 
     def get_state(self, game):
@@ -38,7 +45,7 @@ class Agent:
         return self.trainer.train_step(state, action, reward, next_state, done)
 
     def get_action(self, state):
-        self.epsilon = 30
+        self.epsilon = 25
         final_move = [0, 0, 0]
         if random.randint(0, 100) < self.epsilon:
             move = random.randint(0, 2)
@@ -60,4 +67,3 @@ class Agent:
         self.remember(state_old, final_move, reward, state_new, done)
 
         return reward, done, score
-
