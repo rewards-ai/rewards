@@ -15,8 +15,8 @@ total_score = 0
 record = 0
 
 CARS = [Car()] * N_CARS
-MODELS = [Linear_QNet([5, 10, 3])] * N_CARS
-MODEL_PATHS = [r".\model\modelCAR1.pth"]
+MODELS = [Linear_QNet([5, 128, 3])] * N_CARS
+MODEL_PATHS = [r".\model\model.pth"] * N_CARS
 
 for i, model in enumerate(MODELS):
     model.load_state_dict(torch.load(MODEL_PATHS[i]))

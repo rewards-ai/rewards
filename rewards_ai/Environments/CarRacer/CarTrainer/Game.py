@@ -12,6 +12,15 @@ def convert_points(point):
     return int(point[0]), int(point[1])
 
 
+def get_test_params():
+    return {
+        "isAlive": None,
+        "obs": [],
+        "dir": None,
+        "rotationVel": None
+    }
+
+
 class Track:
     def __init__(self):
         self.track1_image = pygame.image.load(Path(__file__).parent.joinpath(r"Assets\track_test_7.png"))
@@ -56,13 +65,18 @@ class Track:
 
     def track1_checkpoint(self, car):
         visited = []
-        
 
 
 class CarEnv:
     def __init__(self, reward_func, screen):
         self.screen = pygame.display.set_mode((800, 700))
         self.screen.fill((0, 0, 0))
+        self.params = {
+            "isAlive": None,
+            "obs": None,
+            "dir": None,
+            "rotationVel": None
+        }
 
         self.original_image = None
         self.angle = None
@@ -174,12 +188,14 @@ class CarEnv:
         else:
             self.alive = True
 
-        reward = self.reward_func({
+        self.params = {
             "isAlive": self.alive,
             "obs": self.radars,
             "dir": self.direction,
             "rotationVel": self.rotation_vel
-        })
+        }
+
+        reward = self.reward_func(self.params)
 
         self.reward += reward
         return reward, not self.alive, self.reward
