@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="31c174b5-035c-4951-b768-467fe9d58f32" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Tests/model/car_best_yet.pth" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Tests/model/model.pth" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Tests/test_pgame.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Tests/test_single_car.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/model/model.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/model/model/model.pth" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/model/model/model.pth" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/model/model/model_2.pth" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/model/model/model_2.pth" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/model/modelCAR1.pth" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/model/modelCAR1.pth" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/test_multiple_car.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/test_multiple_car.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/test_single_car.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/test_single_snake.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/test_single_snake.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rewards_ai/Environments/CarRacer/CarTrainer/Agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/rewards_ai/Environments/CarRacer/CarTrainer/Agent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rewards_ai/Environments/CarRacer/CarTrainer/Game.py" beforeDir="false" afterPath="$PROJECT_DIR$/rewards_ai/Environments/CarRacer/CarTrainer/Game.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="2MYRLdaXHSc5CWG5d6W1rzkdqnv" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="31c174b5-035c-4951-b768-467fe9d58f32" name="Default Changelist" comment="" />
+      <created>1677942474471</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1677942474471</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="548" y="162" key="FileChooserDialogImpl" timestamp="1677944302260">
+      <screen x="0" y="0" width="1536" height="816" />
+    </state>
+    <state x="548" y="162" key="FileChooserDialogImpl/0.0.1536.816@0.0.1536.816" timestamp="1677944302260" />
+    <state x="277" y="54" key="SettingsEditor" timestamp="1677944304832">
+      <screen x="0" y="0" width="1536" height="816" />
+    </state>
+    <state x="277" y="54" key="SettingsEditor/0.0.1536.816@0.0.1536.816" timestamp="1677944304832" />
+  </component>
+</project>
