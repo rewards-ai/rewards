@@ -1,12 +1,8 @@
-from rewards.envs.CarRace.game import CarGame
-from rewards.envs.CarRace.agent import CarAgent
+# TODO: We need to set some hierchial set of imports
 
-from rewards.agent_models import (
-    LinearQNet
-)
-
-from rewards.trainer import (
-    QTrainer
-)
-
-from rewards import trainer 
+import rewards.models as agent_models
+from rewards.agent import Agent
+from rewards.envs.car import CarGame
+from rewards.models import DeepNet, LinearQNet
+from rewards.trainer import QTrainer
+from rewards.workflow import RLWorkFlow

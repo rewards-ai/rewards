@@ -1,22 +1,23 @@
-import os 
-import torch 
-import torch.nn as nn 
-import torch.optim as optim 
-import torch.nn.functional as F 
-from typing import Optional, List 
+import os
+from typing import List, Optional
 
-# TODO:
-# - Number of layers as a args 
-# - variable dimension in each layer will be supported both by the UI and SDK 
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
 
-class Net(nn.Module):
+
+class DeepNet(nn.Module):
     """
     Base Class for all the models that will be added from here and inherited from this class.
     """
+
     def __init__(self) -> None:
-        super(Net, self).__init__()
-    
-    def save(self, filename : str = "model.pth", folder_path : Optional[str]=None) -> None:
+        super(DeepNet, self).__init__()
+
+    def save(
+        self, filename: str = "model.pth", folder_path: Optional[str] = None
+    ) -> None:
         """
         Save the model to a file.
 
@@ -24,21 +25,21 @@ class Net(nn.Module):
             filename (str, optional): The file name. Defaults to "model.pth".
             folder_path (str, optional): The folder path to save the model. Defaults to "None".
         Returns:
-            None 
+            None
         """
         if folder_path is None:
-            folder_path = "./models" 
+            folder_path = "./models"
             if not os.path.exists(folder_path):
-                os.mkdir(folder_path) 
-            
+                os.mkdir(folder_path)
+
             filename = os.path.join(folder_path, filename)
             torch.save(self.state_dict(), filename)
         else:
             filename = os.path.join(folder_path, filename)
             torch.save(self.state_dict(), filename)
         print(f"=> model saved as: {filename}")
-    
-    def load(self, filename : str, folder_path : Optional[str] = None) -> None:
+
+    def load(self, filename: str, folder_path: Optional[str] = None) -> None:
         """
         Load the model from a file.
 
@@ -46,23 +47,27 @@ class Net(nn.Module):
             filename (str): The file name.
             folder_path (str, optional): The folder path to save the model. Defaults to "None".
         Returns:
-            None 
+            None
         """
         try:
-            model_path = filename if folder_path is None else os.path.join(folder_path, filename) 
+            model_path = (
+                filename
+                if folder_path is None
+                else os.path.join(folder_path, filename)
+            )
             self.load_state_dict(torch.load(model_path, map_location="cpu"))
-            self.eval() 
+            self.eval()
         except Exception as e:
             print(e)
             print(f"=> model not found at: {model_path}")
-         
 
-class LinearQNet(Net):
-    def __init__(self, layers_conf : List[List[int]]):
+
+class LinearQNet(DeepNet):
+    def __init__(self, layers_conf: List[List[int]]):
         """Basic LinearQNet for the agent model.
 
         Args:
-            layers_conf (List[List[int]]): The list of layers. Each element will be a list 
+            layers_conf (List[List[int]]): The list of layers. Each element will be a list
             example: [[in_dim, out_dim], [in_dim, out_dim]]
         """
         super(LinearQNet, self).__init__()
@@ -71,8 +76,8 @@ class LinearQNet(Net):
         self.layers = nn.ModuleList()
         for i in range(self.num_layers):
             self.layers.append(nn.Linear(layers_conf[i][0], layers_conf[i][1]))
-        
+
     def forward(self, x):
-        for i in range(self.num_layers-1):
+        for i in range(self.num_layers - 1):
             x = F.relu(self.layers[i](x))
         return self.layers[-1](x)
