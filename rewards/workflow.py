@@ -1,15 +1,13 @@
 import inspect
-import os
 import time
-from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from dataclasses import dataclass
+from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 import pygame
 import torch
 import wandb
 
-from .agent import Agent
 from .envs.car import CarGame
 from .models import LinearQNet
 from .trainer import QTrainer
