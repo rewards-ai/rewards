@@ -55,10 +55,10 @@ class WorkFlowConfigurations:
     EPSILON: float = 0.99
 
     # Model configuration
-    LAYER_CONFIG: Union[List[List[int]], torch.nn.Module] = [[5, 64], [64, 3]]
+    LAYER_CONFIG: Union[List[List[int]], torch.nn.Module] = None # required 
 
     CHECKPOINT_PATH: Optional[str] = None
-    REWARD_FUNCTION: Callable = default_reward_function
+    REWARD_FUNCTION: Callable = None # required 
 
 
 class RLWorkFlow:
@@ -79,7 +79,7 @@ class RLWorkFlow:
         if isinstance(self.config.LAYER_CONFIG, torch.nn.Module):
             self.model = self.config.LAYER_CONFIG
         else:
-            self.model = LinearQNet(self.config.LAYER_CONFIG)
+            self.model = LinearQNet(self.config.LAYER_CONFIG) if self.config.LAYER_CONFIG is not None else LinearQNet([[5, 64], [64, 3]])
 
         # Build Agent
         self.agent = QTrainer(
@@ -96,7 +96,7 @@ class RLWorkFlow:
 
         wandb_config = self.config.__dict__.copy()
         wandb_config["REWARD_FUNCTION"] = inspect.getsource(
-            self.config.REWARD_FUNCTION
+            self.config.REWARD_FUNCTION if self.config.REWARD_FUNCTION is not None else default_reward_function
         )
 
         if isinstance(self.model, torch.nn.Module):
@@ -134,10 +134,12 @@ class RLWorkFlow:
         self.screen = pygame.display.set_mode(
             self.config.SCREEN_SIZE, pygame.HIDDEN
         )
+        
+        reward_func = self.config.REWARD_FUNCTION if self.config.REWARD_FUNCTION is not None else default_reward_function
         self.game = CarGame(
             frame=self.screen,
             track_num=self.config.ENVIRONMENT_WORLD,
-            reward_func=self.config.REWARD_FUNCTION,
+            reward_func=reward_func,
         )
 
     def run_single_episode(self):
