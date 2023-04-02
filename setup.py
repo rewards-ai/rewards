@@ -27,7 +27,7 @@ def read_requirements(path):
 
 setuptools.setup(
     name="rewardsAI",
-    version="0.0.2",
+    version="0.0.3",
     author="rewards-AI",
     description="Low-code RL agent training and evaluating platform.",
     long_description=read("README.md"),
