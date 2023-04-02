@@ -15,11 +15,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Delete dist directory if exists
-        run: |
-          if [ -d "dist" ]; then
-            rm -rf dist/
-          fi
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -45,9 +40,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Delete dist directory if exists
-        run: |
-          if exist "dist" rmdir /s /q dist
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
