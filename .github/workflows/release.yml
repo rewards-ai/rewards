@@ -19,6 +19,8 @@ jobs:
         run: |
           if [ -d "dist" ]; then
             rm -rf dist/
+          elif [ -d "dist" ]; then
+            rmdir /s /q dist\
           fi
       - name: Set up Python
         uses: actions/setup-python@v2
