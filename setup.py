@@ -33,7 +33,7 @@ setuptools.setup(
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     url="https://github.com/rewards-ai/rewards-sdk",
-    python_requires='>=3.6',
+    python_requires='>=3.9',
     packages=setuptools.find_packages(exclude=["tests", ".github"]),
     install_requires=read_requirements("requirements.txt"),
     entry_points={
