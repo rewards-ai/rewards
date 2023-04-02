@@ -26,7 +26,7 @@ def read_requirements(path):
     ]
 
 setuptools.setup(
-    name="rewards",
+    name="rewardsAI",
     version="1.0.0",
     author="rewards-AI",
     description="Low-code RL agent training and evaluating platform.",
