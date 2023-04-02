@@ -7,7 +7,7 @@ from setuptools import find_packages, setup
 def read(*paths, **kwargs):
     """Read the contents of a text file safely.
     >>> read("rewards", "VERSION")
-    '0.1.0'
+    '1.0.2'
     >>> read("README.md")
     ...
     """
@@ -33,7 +33,7 @@ setup(
     name="rewards",
     version=read("rewards", "VERSION"),
     description="Awesome rewards created by Anindyadeep",
-    url="https://github.com/Anindyadeep/rewards/",
+    url="https://github.com/Anindyadeep/rewards-sdk",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     author="Anindyadeep",
