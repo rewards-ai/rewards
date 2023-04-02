@@ -10,4 +10,4 @@ rewards.egg-info
 rewards/__pycache__
 rewards/envs/__pycache__
 build 
-dist 
+dist

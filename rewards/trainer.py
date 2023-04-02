@@ -1,10 +1,8 @@
 import os
 import random
-import time
 from typing import Any, List, Union
 
 import numpy as np
-import pygame
 import torch
 import torch.nn as nn
 import torch.optim as optim
