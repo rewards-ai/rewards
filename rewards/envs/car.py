@@ -29,9 +29,9 @@ class CarConfig:
         self.CAR_SCALE: int = 500
         self.SCREEN_SIZE: Tuple[int, int] = (800, 700)
         self.CAR_TRACKS: Dict[int, str] = {
-            0: "track_test_7.png",
-            1: "track_test_4.png",
-            2: "track_test_5.png",
+            0: "track-1.png",
+            1: "track-2.png",
+            2: "track-3.png",
         }
 
         self.CAR_IMAGE: str = "car.png"
