@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install Dependencies
         run: |
-          pip install poetry
+          pip install poetry twine
           poetry install
       - name: Build and publish
         env:
