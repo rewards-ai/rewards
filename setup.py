@@ -35,9 +35,9 @@ setuptools.setup(
     url="https://github.com/rewards-ai/rewards-sdk",
     python_requires='>=3.9',
     packages=setuptools.find_packages(exclude=["tests", ".github"]),
-    package_data={
-        'rewardsAI': ['assets/*.png'],
-    },
     include_package_data=True,
+    package_data={
+        'rewardsAI': ['assets/CarRace/*.png'],
+    },
     install_requires=read_requirements("requirements.txt")
 )
