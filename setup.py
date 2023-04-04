@@ -27,7 +27,7 @@ def read_requirements(path):
 
 setuptools.setup(
     name="rewardsAI",
-    version="0.0.0.4",
+    version="0.0.0.5",
     author="rewards-ai",
     description="Low-code RL agent training and evaluating platform.",
     long_description=read("README.md"),
@@ -35,5 +35,6 @@ setuptools.setup(
     url="https://github.com/rewards-ai/rewards-sdk",
     python_requires='>=3.9',
     packages=setuptools.find_packages(exclude=["tests", ".github"]),
+    include_package_data=True,
     install_requires=read_requirements("requirements.txt")
 )
