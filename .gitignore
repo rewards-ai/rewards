@@ -13,3 +13,4 @@ build
 dist
 test.py
 models
+setup.py
