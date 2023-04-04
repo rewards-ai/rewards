@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     branches:
-      - pratyush
+      - main
 
 jobs:
   build-and-publish-linux:
