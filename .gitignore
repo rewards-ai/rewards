@@ -11,3 +11,5 @@ rewards/__pycache__
 rewards/envs/__pycache__
 build 
 dist
+test.py
+models
