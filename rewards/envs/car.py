@@ -70,7 +70,7 @@ class Track(CarConfig):
 
         self.track_image_path = os.path.join(
             self.ASSET_PATH, self.CAR_TRACKS[track_num]
-        )
+        ).replace(os.sep, '/')
 
         self.car_image_path = os.path.join(self.ASSET_PATH, self.CAR_IMAGE)
 
