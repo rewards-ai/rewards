@@ -15,10 +15,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Install Poetry
-        uses: shivammathur/setup-poetry@v1
       - name: Install Dependencies
-        run: poetry install
+        run: |
+          pip install poetry
+          poetry install
       - name: Build and publish
         env:
           TWINE_USERNAME: __token__
