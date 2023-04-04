@@ -5,4 +5,4 @@ wandb
 pygame 
 pandas 
 numpy 
-scikit-learn 
+scikit-learn

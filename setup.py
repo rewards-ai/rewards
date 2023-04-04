@@ -1,9 +1,7 @@
-"""Python setup.py for rewards package"""
-import io
 import os
-from setuptools import find_packages, setup
-
-
+import io
+import setuptools
+    
 def read(*paths, **kwargs):
     """Read the contents of a text file safely.
     >>> read("rewards", "VERSION")
@@ -20,7 +18,6 @@ def read(*paths, **kwargs):
         content = open_file.read().strip()
     return content
 
-
 def read_requirements(path):
     return [
         line.strip()
@@ -28,19 +25,19 @@ def read_requirements(path):
         if not line.startswith(('"', "#", "-", "git+"))
     ]
 
-
-setup(
-    name="rewards",
-    version=read("rewards", "VERSION"),
-    description="Awesome rewards created by Anindyadeep",
-    url="https://github.com/Anindyadeep/rewards/",
+setuptools.setup(
+    name="rewardsAI",
+    version="0.0.0.7",
+    author="rewards-ai",
+    description="Low-code RL agent training and evaluating platform.",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
-    author="Anindyadeep",
-    packages=find_packages(exclude=["tests", ".github"]),
-    install_requires=read_requirements("requirements.txt"),
-    entry_points={
-        "console_scripts": ["rewards = rewards.__main__:main"]
+    url="https://github.com/rewards-ai/rewards-sdk",
+    python_requires='>=3.9',
+    packages=setuptools.find_packages(exclude=["tests", ".github"]),
+    include_package_data=True,
+    package_data={
+        'rewardsAI': ['assets/CarRace/*.png'],
     },
-    extras_require={"test": read_requirements("requirements-test.txt")},
+    install_requires=read_requirements("requirements.txt")
 )
