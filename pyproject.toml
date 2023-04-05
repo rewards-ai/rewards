@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "rewards"
-version = "1.0.2"
-description = "A low code sdk for crearing custom environments and deep RL agents."
-authors = ["Anindyadeep <2005641@kiit.ac.in>"]
+version = "0.0.0.1"
+description = "Start learning about RL and make model and envs in minutes in just few lines of code"
+authors = ["rewards.ai"]
 license = "MIT"
 readme = "README.md"
 
@@ -13,10 +13,7 @@ torch = "^2.0.0"
 lightning = "^2.0.1"
 pygame = "^2.3.0"
 numpy = "^1.24.2"
-PyQt5 = "^5.15.9"
-pyqtgraph = "^0.13.2"
-wandb = "^0.14.0"
-scikit-learn = "^1.2.2"
+matplotlib = "^3.7.1"
 pandas = "^1.5.3"
 
 

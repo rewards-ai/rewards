@@ -12,3 +12,7 @@ rewards/envs/__pycache__
 build 
 dist 
 TODO
+dist
+test.py
+models
+setup.py
