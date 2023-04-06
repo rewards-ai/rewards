@@ -1,8 +1,9 @@
---find-links https://download.pytorch.org/whl/cpu
-torch==2.0.0
-
+torch
 wandb 
-pygame 
 pandas 
 numpy 
-scikit-learn
+pygame 
+PyQt5
+pyqtgraph
+scikit-learn 
+matplotlib 
