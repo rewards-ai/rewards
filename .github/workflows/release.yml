@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-
 jobs:
   build-and-publish-linux:
     runs-on: ${{ matrix.os }}
@@ -25,4 +24,4 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
           poetry build
-          twine upload --repository pypi dist/*
+          poetry publish
