@@ -1,15 +1,13 @@
 import inspect
-import os
 import time
-from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from dataclasses import dataclass
+from typing import Callable, List, Optional, Tuple, Union
 
 import pandas as pd
 import pygame
 import torch
 import wandb
 
-from .agent import Agent
 from .envs.car import CarGame
 from .models import LinearQNet
 from .trainer import QTrainer
@@ -60,6 +58,8 @@ class WorkFlowConfigurations:
     CHECKPOINT_PATH: Optional[str] = None
     REWARD_FUNCTION: Callable = None # required 
 
+    # Tracking configuration 
+    ENABLE_WANDB : bool = False 
 
 class RLWorkFlow:
     def __init__(
@@ -93,19 +93,23 @@ class RLWorkFlow:
         )
 
         # Once everything is done then upload all configurations to wandb
+        
+        if self.config.ENABLE_WANDB:
+            wandb_config = self.config.__dict__.copy()
+            wandb_config["REWARD_FUNCTION"] = inspect.getsource(
+                self.config.REWARD_FUNCTION if self.config.REWARD_FUNCTION is not None else default_reward_function
+            )
 
-        wandb_config = self.config.__dict__.copy()
-        wandb_config["REWARD_FUNCTION"] = inspect.getsource(
-            self.config.REWARD_FUNCTION if self.config.REWARD_FUNCTION is not None else default_reward_function
-        )
+            if isinstance(self.model, torch.nn.Module):
+                wandb_config.pop("LAYER_CONFIG")
+                # Also upload the model to wandb artifact 
+                
+            wandb_config.pop("CHECKPOINT_PATH")
 
-        if isinstance(self.model, torch.nn.Module):
-            wandb_config.pop("LAYER_CONFIG")
-        wandb_config.pop("CHECKPOINT_PATH")
-
-        self.run = wandb.init(
-            project=self.config.EXPERIMENT_NAME, config=wandb_config
-        )
+            self.run = wandb.init(
+                project=self.config.EXPERIMENT_NAME, config=wandb_config
+            )
+            
         config_dataframe = pd.DataFrame(
             data={
                 "configuration name": list(wandb_config.keys()),
@@ -115,14 +119,15 @@ class RLWorkFlow:
             }
         )
 
-        config_table = wandb.Table(dataframe=config_dataframe)
-        config_table_artifact = wandb.Artifact(
-            "configuration_artifact", type="dataset"
-        )
-        config_table_artifact.add(config_table, "configuration_table")
+        if self.config.ENABLE_WANDB:
+            config_table = wandb.Table(dataframe=config_dataframe)
+            config_table_artifact = wandb.Artifact(
+                "configuration_artifact", type="dataset"
+            )
+            config_table_artifact.add(config_table, "configuration_table")
 
-        self.run.log({"Configuration": config_table})
-        self.run.log_artifact(config_table_artifact)
+            self.run.log({"Configuration": config_table})
+            self.run.log_artifact(config_table_artifact)
 
         # Build Game
         # TODO:
@@ -173,7 +178,8 @@ class RLWorkFlow:
                             }
                         )
 
-                self.run.log({"Num Games": self.agent.n_games})
+                if self.config.ENABLE_WANDB:
+                    self.run.log({"Num Games": self.agent.n_games})
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:

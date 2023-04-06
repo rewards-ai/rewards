@@ -29,9 +29,9 @@ class CarConfig:
         self.CAR_SCALE: int = 500
         self.SCREEN_SIZE: Tuple[int, int] = (800, 700)
         self.CAR_TRACKS: Dict[int, str] = {
-            0: "track_test_7.png",
-            1: "track_test_4.png",
-            2: "track_test_5.png",
+            0: "track-1.png",
+            1: "track-2.png",
+            2: "track-3.png",
         }
 
         self.CAR_IMAGE: str = "car.png"
@@ -41,7 +41,7 @@ class CarConfig:
         self.CAR_FPS: int = 15
         self.CAR_ANGLE: int = 0
 
-        self.CAR_RECT_SIZE: Tuple[int, int] = (200, 100)
+        self.CAR_RECT_SIZE: Tuple[int, int] = (200, 50)
         self.CAR_VELOCITY_VECTOR: Tuple[float, float] = (0.8, 0.0)
         self.CAR_ROTATION_VELOCITY: Union[int, float] = 15
         self.CAR_DIRECTION: Union[int, float] = 0
@@ -70,7 +70,7 @@ class Track(CarConfig):
 
         self.track_image_path = os.path.join(
             self.ASSET_PATH, self.CAR_TRACKS[track_num]
-        )
+        ).replace(os.sep, '/')
 
         self.car_image_path = os.path.join(self.ASSET_PATH, self.CAR_IMAGE)
 
@@ -247,9 +247,9 @@ class CarGame(Track):
 
         try:
             if self.screen.get_at(collision_point_right) == pygame.Color(
-                2, 105, 31, 255
+                173, 255, 133, 255
             ) or self.screen.get_at(collision_point_left) == pygame.Color(
-                2, 105, 31, 255
+                173, 255, 133, 255
             ):
                 self.alive = False
 
@@ -295,7 +295,7 @@ class CarGame(Track):
         y = int(self.rect.center[1])
         try:
             while (
-                not self.screen.get_at((x, y)) == pygame.Color(2, 105, 31, 255)
+                not self.screen.get_at((x, y)) == pygame.Color(173, 255, 133, 255)
                 and length < 200
             ):
                 length += 1

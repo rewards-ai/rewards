@@ -42,9 +42,10 @@ Load the virtual environment
 ```
 .\venv\Scripts\Activate
 ```
-Now go to the repository and install all the dependencies
+Now go to the repository and install all the dependencies and the `rewards`s package.
 
 ```bash
+pip install -r requirements.txt
 python setup.py install
 ```
 
