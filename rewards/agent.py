@@ -1,4 +1,5 @@
 import os
+import glob 
 import random
 from collections import deque
 from dataclasses import dataclass
@@ -24,7 +25,8 @@ class Agent(AgentConf):
     def __init__(
         self,
         model: torch.nn.Module,
-        checkpoint_path: Optional[str] = None,
+        checkpoint_folder_path: Optional[str] = None,
+        model_name : Optional[str] = None, 
         lr: float = 0.01,
         epsilon: float = 0.25,
         gamma: float = 0.9,
@@ -46,15 +48,11 @@ class Agent(AgentConf):
 
         self.memory = deque(maxlen=self.MAX_MEMORY)
         self.model = model
-        if checkpoint_path:
-            self.model.load_state_dict(
-                torch.load(
-                    os.path.join(checkpoint_path),
-                    map_location=self.DEVICE,
-                )
-            )
-            self.model.eval()
-
+        
+        # Lates changes loading the model directly if exists 
+        
+        self.model.load(checkpoint_folder_path, model_name, self.DEVICE)
+        
     def get_state(self, game: Any) -> np.ndarray:
         """Returns the current state of the game.
         NOTE: Some Assumptions:
