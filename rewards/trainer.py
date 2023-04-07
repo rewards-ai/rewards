@@ -46,18 +46,13 @@ class QTrainer(Agent):
         self.criterion = loss_fn()
         self.optimizer = optimizer_info(self.model.parameters(), lr=self.lr)
 
-        if training_params["checkpoint_path"]:
-            self.model.load_state_dict(
-                torch.load(
-                    training_params["checkpoint_path"], map_location="cpu"
-                )
-            )
-
         super(QTrainer, self).__init__(
             model=self.model,
             lr=self.lr,
             epsilon=self.epsilon,
             gamma=self.gamma,
+            checkpoint_folder_path=training_params['checkpoint_folder_path'], 
+            model_name=training_params['model_name']
         )
 
     def _get_loss_optimizer_info(
