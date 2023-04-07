@@ -30,6 +30,7 @@ def default_reward_function(props):
 @dataclass(kw_only=True)
 class WorkFlowConfigurations:
     # wandb experiment
+    DEVICE : str = "cpu"
     EXPERIMENT_NAME: str = "sample RL experiment"
 
     # Environment configuration
@@ -55,7 +56,8 @@ class WorkFlowConfigurations:
     # Model configuration
     LAYER_CONFIG: Union[List[List[int]], torch.nn.Module] = None # required 
 
-    CHECKPOINT_PATH: Optional[str] = None
+    CHECKPOINT_FOLDER_PATH: Optional[str] = None
+    CHECKPOINT_MODEL_NAME: Optional[str] = None
     REWARD_FUNCTION: Callable = None # required 
 
     # Tracking configuration 
@@ -89,7 +91,8 @@ class RLWorkFlow:
             model=self.model,
             loss=self.config.LOSS,
             optimizer=self.config.OPTIMIZER,
-            checkpoint_path=self.config.CHECKPOINT_PATH,
+            checkpoint_folder_path=self.config.CHECKPOINT_FOLDER_PATH,
+            model_name = self.config.CHECKPOINT_MODEL_NAME
         )
 
         # Once everything is done then upload all configurations to wandb
@@ -104,22 +107,22 @@ class RLWorkFlow:
                 wandb_config.pop("LAYER_CONFIG")
                 # Also upload the model to wandb artifact 
                 
-            wandb_config.pop("CHECKPOINT_PATH")
+            wandb_config.pop("CHECKPOINT_FOLDER_PATH")
 
             self.run = wandb.init(
                 project=self.config.EXPERIMENT_NAME, config=wandb_config
             )
             
-        config_dataframe = pd.DataFrame(
-            data={
-                "configuration name": list(wandb_config.keys()),
-                "configuration": [
-                    str(ele) for ele in list(wandb_config.values())
-                ],
-            }
-        )
-
         if self.config.ENABLE_WANDB:
+            config_dataframe = pd.DataFrame(
+                data={
+                    "configuration name": list(wandb_config.keys()),
+                    "configuration": [
+                        str(ele) for ele in list(wandb_config.values())
+                    ],
+                }
+            )
+        
             config_table = wandb.Table(dataframe=config_dataframe)
             config_table_artifact = wandb.Artifact(
                 "configuration_artifact", type="dataset"
@@ -165,12 +168,12 @@ class RLWorkFlow:
                     self.agent.train_long_memory()
 
                     if score > record:
-                        self.agent.model.save()
+                        self.agent.model.save(self.config.CHECKPOINT_FOLDER_PATH, self.config.CHECKPOINT_MODEL_NAME, self.config.DEVICE)
                         record = score
 
                     total_score += score
 
-                    if self.agent.n_games != 0:
+                    if self.agent.n_games != 0 and self.config.ENABLE_WANDB:
                         self.run.log(
                             {
                                 "episode score": score,
