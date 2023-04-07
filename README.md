@@ -1,4 +1,4 @@
-# **rewards** 
+# **rewards (0.0.7)** 
 ### A low code sdk for creating custom environments and deep RL agents. 
 
 
