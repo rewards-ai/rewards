@@ -137,20 +137,21 @@ class RLWorkFlow:
         # For now we are assuming that we only have just one game and so we are keeping
         # all the game and env config at one place. In next set of version this will be
         # different as we will support it for multiple pre-built envs and custom envs
+        
+        self.reward_func = self.config.REWARD_FUNCTION if self.config.REWARD_FUNCTION is not None else default_reward_function
 
+    def run_episodes(self):
         # Build PyGame
         self.screen = pygame.display.set_mode(
             self.config.SCREEN_SIZE, pygame.HIDDEN
         )
         
-        reward_func = self.config.REWARD_FUNCTION if self.config.REWARD_FUNCTION is not None else default_reward_function
         self.game = CarGame(
             frame=self.screen,
             track_num=self.config.ENVIRONMENT_WORLD,
-            reward_func=reward_func,
+            reward_func=self.reward_func,
         )
-
-    def run_single_episode(self):
+        
         total_score, record = 0, 0
 
         try:
