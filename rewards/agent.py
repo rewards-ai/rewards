@@ -50,7 +50,6 @@ class Agent(AgentConf):
         self.model = model
         
         # Lates changes loading the model directly if exists 
-        
         self.model.load(checkpoint_folder_path, model_name, self.DEVICE)
         
     def get_state(self, game: Any) -> np.ndarray:
