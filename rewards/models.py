@@ -11,7 +11,6 @@ import torch.optim as optim
 
 DEFAULT_MODEL_PATH = './saved_models'
 
-
 class DeepNet(nn.Module):
     """
     Base Class for all the models that will be added from here and inherited from this class.
@@ -40,6 +39,7 @@ class DeepNet(nn.Module):
             self.state_dict(), 
             os.path.join(folder_path, _model_name)
         )
+        print(f"=> Latest model saved as {_model_name}")
     
     def _get_file_list_mod_by_date(self, search_dir : str, reversed : Optional[bool] = True) -> List[str]:
         """Lists the files based on the date modified 
@@ -63,7 +63,6 @@ class DeepNet(nn.Module):
             model_name (Optional[str], optional): The name of the model to save. Defaults to None.
         """
         if checkpoint_folder_path and len(os.listdir(checkpoint_folder_path)) > 0:
-            print(os.listdir(checkpoint_folder_path))
             
             _model_name = self._get_file_list_mod_by_date(checkpoint_folder_path)[0] if model_name is None else model_name 
             model_path = os.path.join(checkpoint_folder_path, _model_name)
