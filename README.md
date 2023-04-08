@@ -1,5 +1,5 @@
-# **rewards** 
-### A low code sdk for crearing custom environments and deep RL agents. 
+# **rewards (0.0.7)** 
+### A low code sdk for creating custom environments and deep RL agents. 
 
 
 <br>
@@ -55,14 +55,14 @@ python setup.py install
 
 **`rewards`** is mainly made for two important reasons. 
 
-- First we want to make learning reinforcement learning easy, by introducing this low code framework. So that folks do not need to spend more time in making environments or other stuff. All they can focus is on creating different agents, models and expeiment with them.
+- First we want to make learning reinforcement learning easy, by introducing this low code framework. So that folks do not need to spend more time in making environments or other stuff. All they can focus is on creating different agents, models and experiment with them.
 
-- We want to make it as interactive and begginer friendly as possible. So we are also introducing **`rewards-platform`**  which where we gamified the experience of learning RL.
+- We want to make it as interactive and beginner friendly as possible. So we are also introducing **`rewards-platform`**  where we gamified the experience of learning RL.
 
-- If playing games can be fun and competitive then why not RL? Hence with **`rewards-platform`** and **`rewards`** you can host and join ongoing competition and learn RL with your friends. 
+- If playing games can be fun and competitive then why not RL? Hence with **`rewards-platform`** and **`rewards`** you can host and join ongoing competitions and learn RL with your friends. 
 
 **NOTE**: Our coming enterprise version is mainly focussed to build the same but for RL/Robotics based 
-companies where we want to ensure that their focus lies more on the research rather creating environments and other configurations. 
+companies where we want to ensure that their focus lies more on the research rather than creating environments and other configurations. 
 
 **Take a look on how to get started with a sample experiment** 
 
@@ -122,7 +122,7 @@ configs = workflow.WorkFlowConfigurations(
 | REWARD_FUNCTION    | `Callable`        | Users are expected to write some reward function (`Callable`) and then have to use this reward function for agent's training.|  ```def default_reward_function(props): if props["isAlive"]: return 1 return 0 ```| User's choice <br> **some important parameters** <br><br> `isAlive` represents whether the car is alive or not. So on that basis we can penalize our agent. <br><br> `obs` The car's radar's oberservations values. (more on documentation) <br> <br>`rotationVel` Car's rotational velocity value (more on documentation)        |
 
 
-So above is a quick overview of how to use different reward configurations. Now once configuration part is done, load those configuration to `RLWorkFlow()` and run for a single episodes. 
+So above is a quick overview of how to use different reward configurations. Now once the configuration part is done, load those configuration to `RLWorkFlow()` and run for a single episodes. 
 **NOTE:** Make sure you have `weights and biases` installed. You can install that using:
 
 ```bash
