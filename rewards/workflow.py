@@ -1,5 +1,6 @@
+import sys 
+import time 
 import inspect
-import time
 from dataclasses import dataclass
 from typing import Callable, List, Optional, Tuple, Union
 
@@ -31,8 +32,6 @@ def default_reward_function(props):
 class WorkFlowConfigurations:
     # wandb experiment
     DEVICE : str = "cpu"
-    EXPERIMENT_NAME: str = "sample RL experiment"
-
     # Environment configuration
 
     ENVIRONMENT_NAME: str = "car-race"
@@ -40,14 +39,14 @@ class WorkFlowConfigurations:
 
     # Game configuration
     MODE: str = "training"
-    CONTROL_SPEED: float = 0.05
-    TRAIN_SPEED: int = 100
+    CAR_SPEED: int = 100
     SCREEN_SIZE: Optional[Tuple] = (800, 700)
 
     # Training configuration
     LR: float = 0.01
     LOSS: str = "mse"
     OPTIMIZER: str = "adam"
+    NUM_EPISODES : int = 100 
 
     # RL Configuration
     GAMMA: float = 0.99
@@ -132,14 +131,14 @@ class RLWorkFlow:
             self.run.log({"Configuration": config_table})
             self.run.log_artifact(config_table_artifact)
 
-        # Build Game
-        # TODO:
-        # For now we are assuming that we only have just one game and so we are keeping
-        # all the game and env config at one place. In next set of version this will be
-        # different as we will support it for multiple pre-built envs and custom envs
         
         self.reward_func = self.config.REWARD_FUNCTION if self.config.REWARD_FUNCTION is not None else default_reward_function
 
+    def stop_game(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+    
     def run_episodes(self):
         # Build PyGame
         self.screen = pygame.display.set_mode(
@@ -152,42 +151,39 @@ class RLWorkFlow:
             reward_func=self.reward_func,
         )
         
-        total_score, record = 0, 0
-
-        try:
-            while True:
-                time.sleep(0.01)
-                pygame.display.update()
-
-                self.game.FPS = self.config.TRAIN_SPEED
-                reward, done, score = self.agent.train_step(self.game)
-                self.game.timeTicking()
-
-                if done:
-                    self.game.initialize()
-                    self.agent.n_games += 1
-                    self.agent.train_long_memory()
-
-                    if score > record:
-                        self.agent.model.save(self.config.CHECKPOINT_FOLDER_PATH, self.config.CHECKPOINT_MODEL_NAME, self.config.DEVICE)
-                        record = score
-
-                    total_score += score
-
-                    if self.agent.n_games != 0 and self.config.ENABLE_WANDB:
-                        self.run.log(
-                            {
-                                "episode score": score,
-                                "mean score": total_score / self.agent.n_games,
-                            }
-                        )
-
-                if self.config.ENABLE_WANDB:
-                    self.run.log({"Num Games": self.agent.n_games})
-
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        break
-        except pygame.error:
-            print("pygame error")
+        
+        for episode in range(1, self.config.NUM_EPISODES + 1):
+            self.game.initialize() # change it to env.reset() 
+            self.game.FPS = self.config.CAR_SPEED
+            total_score, record = 0, 0
+            done = False 
+            
+            try:
+                while not done:
+                    time.sleep(0.01) 
+                    pygame.display.update() # try to comment it and see what happens 
+                    
+                    _, done, score = self.agent.train_step(self.game)
+                    self.game.timeTicking() 
+                self.agent.n_games += 1 
+                self.agent.train_long_memory() 
+                
+                if score > record:
+                    self.agent.model.save(self.config.CHECKPOINT_FOLDER_PATH, self.config.CHECKPOINT_MODEL_NAME, self.config.DEVICE)
+                    record = score 
+                total_score += score 
+                
+                episode_response = {
+                    "episode_num" : episode, 
+                    "episode score": score,
+                    "mean score": total_score / self.agent.n_games
+                }
+                
+                if self.agent.n_games != 0 and self.config.ENABLE_WANDB:
+                    self.run.log(episode_response)
+                yield episode_response
+            
+            except pygame.error:
+                pygame.quit() 
+                break 
+        print("=> Process finished")
