@@ -1,19 +1,20 @@
 [tool.poetry]
 name = "rewards"
-version = "0.0.6"
+version = "0.1.0"
 description = "Start learning about RL and make model and envs in minutes in just few lines of code"
 authors = ["rewards.ai"]
 license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.7"
 matplotlib = "^3.7.1"
 torch = "^2.0.0"
 lightning = "^2.0.1"
 pygame = "^2.3.0"
 numpy = "^1.24.2"
 pandas = "^1.5.3"
+wandb = "^0.14.1"
 
 
 [build-system]
