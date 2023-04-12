@@ -4,6 +4,64 @@
 
 <br>
 
+## How to Get Started?
+
+Running the rewards SDK requires you to have:
+- Python 3 installed on your machine
+- The latest version of pip
+
+The SDK can be installed with the following command:
+
+```
+pip install rewards==0.0.7
+```
+
+This command may not work if you have a version lower than 3.10.0.
+Howver, you can try to run the following:
+
+```
+pip install rewards
+```
+
+Test it out with the following code in a new Python file such as `example.py`:
+
+```
+from rewards import workflow
+
+
+def reward_func(props) -> int:
+    reward = 0
+    if props["isAlive"]:
+        reward = 1
+    obs = props["obs"]
+    
+    else:
+        reward += 0
+        if props["rotationVel"] == 15:
+            reward += 1
+    return reward
+
+
+configs = workflow.WorkFlowConfigurations(
+    MODE="training", 
+    LAYER_CONFIG=[[5, 16], [16, 3]], 
+    CHECKPOINT_FOLDER_PATH = None, 
+    CHECKPOINT_MODEL_NAME="model.pth", 
+    NUM_EPISODES=1000, 
+    CAR_SPEED=20, 
+    REWARD_FUNCTION=reward_func, 
+    PYGAME_WINDOW_TYPE="display", 
+    ENVIRONMENT_WORLD=1,
+    SCREEN_SIZE=(1000, 700), 
+    EPSILON=0.99, 
+    GAMMA=0.9, 
+    LR=0.001
+)
+
+flow = workflow.RLWorkFlow(configs)
+flow.run_episodes()
+```
+
 ### **Installation** 
 
 **`[linux]`** 
