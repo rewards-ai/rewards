@@ -11,7 +11,7 @@
 Installing `rewards` is easy in linux. First clone the repository by running 
 
 ```bash
-git clone https://github.com/rewards/rewards.git
+git clone https://github.com/rewards-ai/rewards-SDK.git
 ```
 One cloned go to the repository and make sure `make` is installed. If not installed just run:
 
@@ -131,7 +131,7 @@ pip install wandb
 After this log in / create a new account. Then authorize it inside the command line by typing
 
 ```bash
-wandb auth
+wandb login
 ```
 
 After this you are ready to run the above code:
