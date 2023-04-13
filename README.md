@@ -36,10 +36,21 @@ pip install rewards
 
 Test it out with the following code in a new Python file such as `example.py`:
 
+1. Import the workflow module from rewards
+
+First you call our sdk's `workflow` module. The workflow module helps us to 
+
+- Create Environments and configure environments
+- Create models and configure them 
+- Run the whole experiment and log all the results 
+
 ```
 from rewards import workflow
+```
 
+2. Define your reward function. Here's a sample for your reference:
 
+```
 def reward_func(props) -> int:
     reward = 0
     if props["isAlive"]:
@@ -51,8 +62,11 @@ def reward_func(props) -> int:
         if props["rotationVel"] == 15:
             reward += 1
     return reward
+```
 
+3. Add your configurations:
 
+```
 configs = workflow.WorkFlowConfigurations(
     MODE="training", 
     LAYER_CONFIG=[[5, 16], [16, 3]], 
@@ -68,91 +82,19 @@ configs = workflow.WorkFlowConfigurations(
     GAMMA=0.9, 
     LR=0.001
 )
+```
 
+4. Run your model:
+
+```
 flow = workflow.RLWorkFlow(configs)
 flow.run_episodes()
 ```
 
-## For Potential COntributors
-
-Although the repository is not currently keen on taking open source contributions, we envision to make it entirely open sourced in the near future. If you wish to get familiar with the code base and possibly contribute, you may follow the given steps:
-
-### **Installation** 
-
-**`[linux]`** 
-
-Installing `rewards` is easy in linux. First clone the repository by running 
-
-```bash
-git clone https://github.com/rewards-ai/rewards-SDK.git
-```
-One cloned go to the repository and make sure `make` is installed. If not installed just run:
-
-```bash
-sudo apt install cmake 
-```
-
-Once done, now create a new virtual environment and install dependencies. You can achieve
-this by running the following:
-
-```bash
-make virtualenv
-make install 
-```
-This should install all the dependencies and our sdk `rewards:v1.0.0`. 
-
-<br>
-
-**`[windows]`** 
-
-For installation in windows, it's also simple. All you have to do is just clone the repository same as before. Then create a new virtual environment. 
-
-```bash
-virtualenv .venv
-```
-
-Load the virtual environment 
-```
-.\venv\Scripts\Activate
-```
-Now go to the repository and install all the dependencies and the `rewards`s package.
-
-```bash
-pip install -r requirements.txt
-python setup.py install
-```
-
-<br>
-
-### **Getting started**
-
-
-
-**Take a look on how to get started with a sample experiment** 
-
+**NOTE**: 
 Currently this version of **`rewards`** only supports a single game and environment. That is `car-race`. We will be adding support for more environments (including gym, unity, and custom environments) very soon. 
 
-So let's go ahead and see how to get started with a sample experiment.
 
-```python
-from rewards import workflow
-
-configs = workflow.WorkFlowConfigurations(
-    EXPERIMENT_NAME="Exp 3", 
-    MODE="training", 
-    LAYER_CONFIG=[[5, 64], [64, 3]]
-)
-
-
-flow = workflow.RLWorkFlow(configs)
-flow.run_single_episode()
-```
-
-First you call our sdk's `workflow` module. The workflow module helps us to 
-
-- Create Environments and configure environments
-- Create models and configure them 
-- Run the whole experiment and log all the results 
 
 All at one place. We first get started with writing our own configuration using 
 
@@ -215,3 +157,55 @@ flow.run_single_episode()
 ```
 
 Here you will be able to see the game, and a very nice dashboard with all the runs and configurations and nice graphs. Stay tuned with `rewards.ai` for further updates, documentation and examples. 
+
+## For Potential COntributors
+
+Although the repository is not currently keen on taking open source contributions, we envision to make it entirely open sourced in the near future. If you wish to get familiar with the code base and possibly contribute, you may follow the given steps:
+
+### **Installation** 
+
+**`[linux]`** 
+
+Installing `rewards` is easy in linux. First clone the repository by running 
+
+```bash
+git clone https://github.com/rewards-ai/rewards-SDK.git
+```
+One cloned go to the repository and make sure `make` is installed. If not installed just run:
+
+```bash
+sudo apt install cmake 
+```
+
+Once done, now create a new virtual environment and install dependencies. You can achieve
+this by running the following:
+
+```bash
+make virtualenv
+make install 
+```
+This should install all the dependencies and our sdk `rewards:v1.0.0`. 
+
+<br>
+
+**`[windows]`** 
+
+For installation in windows, it's also simple. All you have to do is just clone the repository same as before. Then create a new virtual environment. 
+
+```bash
+virtualenv .venv
+```
+
+Load the virtual environment 
+```
+.\venv\Scripts\Activate
+```
+Now go to the repository and install all the dependencies and the `rewards`s package.
+
+```bash
+pip install -r requirements.txt
+python setup.py install
+```
+
+<br>
+
