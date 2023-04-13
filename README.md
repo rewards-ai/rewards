@@ -1,6 +1,17 @@
 # **rewards (0.0.7)** 
 ### A low code sdk for creating custom environments and deep RL agents. 
 
+**`rewards`** is mainly made for two important reasons. 
+
+- First we want to make learning **reinforcement learning** easy, by introducing this low code framework. It will ensure that folks do not need to spend time in making environments and other intricacies. They can focus is on creating different agents, models and experiment with them.
+
+- We want to make it as interactive and beginner friendly as possible. So we are also introducing **`rewards-platform`**  where we gamified the experience of learning RL.
+
+- If playing games can be fun and competitive then why not RL? Hence with **`rewards-platform`** and **`rewards`** you can host and join ongoing competitions and learn RL with your friends. 
+
+**NOTE**: Our coming enterprise version is mainly focussed to build the same but for RL/Robotics based 
+companies where we want to ensure that their focus lies more on the research rather than creating environments and other configurations. 
+
 
 <br>
 
@@ -62,6 +73,10 @@ flow = workflow.RLWorkFlow(configs)
 flow.run_episodes()
 ```
 
+## For Potential COntributors
+
+Although the repository is not currently keen on taking open source contributions, we envision to make it entirely open sourced in the near future. If you wish to get familiar with the code base and possibly contribute, you may follow the given steps:
+
 ### **Installation** 
 
 **`[linux]`** 
@@ -111,16 +126,7 @@ python setup.py install
 
 ### **Getting started**
 
-**`rewards`** is mainly made for two important reasons. 
 
-- First we want to make learning reinforcement learning easy, by introducing this low code framework. So that folks do not need to spend more time in making environments or other stuff. All they can focus is on creating different agents, models and experiment with them.
-
-- We want to make it as interactive and beginner friendly as possible. So we are also introducing **`rewards-platform`**  where we gamified the experience of learning RL.
-
-- If playing games can be fun and competitive then why not RL? Hence with **`rewards-platform`** and **`rewards`** you can host and join ongoing competitions and learn RL with your friends. 
-
-**NOTE**: Our coming enterprise version is mainly focussed to build the same but for RL/Robotics based 
-companies where we want to ensure that their focus lies more on the research rather than creating environments and other configurations. 
 
 **Take a look on how to get started with a sample experiment** 
 
