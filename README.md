@@ -95,17 +95,6 @@ flow.run_episodes()
 Currently this version of **`rewards`** only supports a single game and environment. That is `car-race`. We will be adding support for more environments (including gym, unity, and custom environments) very soon. 
 
 
-
-All at one place. We first get started with writing our own configuration using 
-
-```python 
-configs = workflow.WorkFlowConfigurations(
-    EXPERIMENT_NAME="Exp 3", 
-    MODE="training", 
-    LAYER_CONFIG=[[5, 64], [64, 3]]
-)
-```
-
 **Here is the table of configuration and what they means** 
 
 | Configuration Name | TYPE            | What it does                                                                                                                                                                                                                                   | Default value                                                                                              | Options                                                                                                                                                                                                                                                                               |
@@ -140,27 +129,11 @@ After this log in / create a new account. Then authorize it inside the command l
 wandb login
 ```
 
-After this you are ready to run the above code:
-
-```python 
-from rewards import workflow
-
-configs = workflow.WorkFlowConfigurations(
-    EXPERIMENT_NAME="Exp 3", 
-    MODE="training", 
-    LAYER_CONFIG=[[5, 64], [64, 3]]
-)
-
-
-flow = workflow.RLWorkFlow(configs)
-flow.run_single_episode()
-```
-
 Here you will be able to see the game, and a very nice dashboard with all the runs and configurations and nice graphs. Stay tuned with `rewards.ai` for further updates, documentation and examples. 
 
 ## For Potential COntributors
 
-Although the repository is not currently keen on taking open source contributions, we envision to make it entirely open sourced in the near future. If you wish to get familiar with the code base and possibly contribute, you may follow the given steps:
+Although the repository is not currently taking open source contributions, the creators envision to make it entirely open sourced in the near future. If you wish to get familiar with the code base and possibly contribute, you may follow the given steps:
 
 ### **Installation** 
 
