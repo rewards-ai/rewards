@@ -121,6 +121,7 @@ flow.run_episodes()
 
 ## **Setting up the project locally**
 
+
 Setting up rewards is very easy. All you have to do is to first create a virtual environment. Creating a virtual environment is very easy:
 
 **`[LINUX]`**
@@ -145,8 +146,6 @@ After this clone the repository. To clone the repo and move inside the directory
 $ git clone https://github.com/rewards-ai/rewards-SDK.git
 $ cd rewards-SDK
 ```
-
-You should have poetry to install all the dependencies. If poetry is not installed then install it by: 
 
 ```bash
 pip install poetry

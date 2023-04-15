@@ -129,6 +129,64 @@ class RLWorkFlow:
         cv2.destroyAllWindows()
         
     def run_episodes(self):
+        # Once everything is done then upload all configurations to wandb
+        
+        if self.config.ENABLE_WANDB:
+            wandb_config = self.config.__dict__.copy()
+            wandb_config["REWARD_FUNCTION"] = inspect.getsource(
+                self.config.REWARD_FUNCTION if self.config.REWARD_FUNCTION is not None else default_reward_function
+            )
+
+            if isinstance(self.model, torch.nn.Module):
+                wandb_config.pop("LAYER_CONFIG")
+                # Also upload the model to wandb artifact 
+                
+            wandb_config.pop("CHECKPOINT_FOLDER_PATH")
+
+            self.run = wandb.init(
+                project=self.config.EXPERIMENT_NAME, config=wandb_config
+            )
+            
+        if self.config.ENABLE_WANDB:
+            config_dataframe = pd.DataFrame(
+                data={
+                    "configuration name": list(wandb_config.keys()),
+                    "configuration": [
+                        str(ele) for ele in list(wandb_config.values())
+                    ],
+                }
+            )
+        
+            config_table = wandb.Table(dataframe=config_dataframe)
+            config_table_artifact = wandb.Artifact(
+                "configuration_artifact", type="dataset"
+            )
+            config_table_artifact.add(config_table, "configuration_table")
+
+            self.run.log({"Configuration": config_table})
+            self.run.log_artifact(config_table_artifact)
+
+        
+        self.reward_func = self.config.REWARD_FUNCTION if self.config.REWARD_FUNCTION is not None else default_reward_function
+
+    def stop_game(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+    
+    def run_episodes(self):
+        # Build PyGame
+        self.screen = pygame.display.set_mode(
+            self.config.SCREEN_SIZE, pygame.HIDDEN
+        )
+        
+        self.game = CarGame(
+            frame=self.screen,
+            track_num=self.config.ENVIRONMENT_WORLD,
+            reward_func=self.reward_func,
+        )
+        
+        
         for episode in range(1, self.config.NUM_EPISODES + 1):
             self.game.initialize() # change it to env.reset() 
             self.game.FPS = self.config.CAR_SPEED
@@ -155,6 +213,10 @@ class RLWorkFlow:
                     "episode score": score,
                     "mean score": total_score / self.agent.n_games
                 }
+                
+                if self.agent.n_games != 0 and self.config.ENABLE_WANDB:
+                    self.run.log(episode_response)
+                yield episode_response
             
             except pygame.error:
                 pygame.quit() 
