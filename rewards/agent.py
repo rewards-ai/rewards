@@ -9,10 +9,6 @@ from typing import Any, List, Optional, Union
 import numpy as np
 import torch
 
-# TODO:
-# - Use Hydra for configuration management
-
-
 @dataclass
 class AgentConf:
     MAX_MEMORY: int = 100000
@@ -99,7 +95,7 @@ class Agent(AgentConf):
         Returns:
             _type_: _description_
         """
-        self.epsilon = 25
+        self.epsilon = 25 # self.epsilon (WHY NOT)
         final_move = [
             0,
             0,

@@ -8,6 +8,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 from .agent import Agent
+from .envs.car import CarGame
 
 # TODO:
 # - Move RMSE, MAE to utils module
@@ -130,7 +131,7 @@ class QTrainer(Agent):
 
     def train_long_memory(self) -> None:
         """Trains the agent for a longer step saving state-actions to the memory
-
+     print("stepping")
         Returns:
             None
         """
@@ -157,7 +158,7 @@ class QTrainer(Agent):
         """
         return self.step(state, action, reward, next_state, done)
 
-    def train_step(self, game: Any) -> List[Union[int, float, bool]]:
+    def train_step(self, game: CarGame) -> List[Union[int, float, bool]]:
         """
         Defines a single train step for an agent where the agent performs
         some action in a given state to get next state, current rewards, and
@@ -172,9 +173,15 @@ class QTrainer(Agent):
 
         state_old = self.get_state(game)
         final_move = self.get_action(state_old)
-        reward, done, score = game.play_step(final_move)
+        
+        if game.PYGAME_SCREEN_TYPE == "surface":
+            reward, done, score, pixel_data = game.play_step(final_move)
+        
+        else:
+            reward, done, score = game.play_step(final_move)
+            
         state_new = self.get_state(game)
         self.train_short_memory(state_old, final_move, reward, state_new, done)
         self.remember(state_old, final_move, reward, state_new, done)
 
-        return reward, done, score
+        return [reward, done, score, pixel_data] if game.PYGAME_SCREEN_TYPE == "surface" else [reward, done, score]
