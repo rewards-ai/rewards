@@ -1,72 +1,43 @@
-# **rewards (0.0.7)** 
-### A low code sdk for creating custom environments and deep RL agents. 
+# **rewards**
 
-**`rewards`** is mainly made for two important reasons. 
+#### Create custom environments and train custom agents in few lines of code.
 
-- First we want to make learning **reinforcement learning** easy, by introducing this low code framework. It will ensure that folks do not need to spend time in making environments and other intricacies. They can focus is on creating different agents, models and experiment with them.
+Getting started with RL is quite easy now a days. The workflow stays almost same. You create your environment. This environment is either used for from Open AI's `gym` or we make custom environment using `pygame` and `unity`. After environment creation we go for making deep RL agents, by creating our model using `tensorflow` or `pytorch` etc. 
 
-- We want to make it as interactive and beginner friendly as possible. So we are also introducing **`rewards-platform`**  where we gamified the experience of learning RL.
+So the bottleneck mostly lies in the environment creation, integrating the environment with different libraries like `gym` to make agents around it and finding that best reward function. It becomes very hectic to manage all these experimentation process all by yourself. 
 
-- If playing games can be fun and competitive then why not RL? Hence with **`rewards-platform`** and **`rewards`** you can host and join ongoing competitions and learn RL with your friends. 
+Introducing **rewards**, a low code RL training and experimentation platform powered by rewards.ai, rewards lets us to do those in some few lines of code. Manage all your RL experimentation and integration code in just few lines of code. 
 
-**NOTE**: Our coming enterprise version is mainly focussed to build the same but for RL/Robotics based 
-companies where we want to ensure that their focus lies more on the research rather than creating environments and other configurations. 
+**what other things rewards provides**?
+
+- Easy experimentation and integration management in just few lines of code. 
+
+- Integration with **[rewards-platform]([GitHub - rewards-ai/training-platform](https://github.com/rewards-ai/training-platform))** .If you did' check out, think it as the open source alternative of Amazon deep racer. 
+
+- Beginner friendly documentation focussed on learning reinforcement learning.
 
 
-<br>
 
-## How to Get Started?
+## **Getting started**
 
-Running the rewards SDK requires you to have:
-- Python 3 installed on your machine
-- The latest version of pip
+Oh that's very easy. First install rewards:
 
-The SDK can be installed with the following command:
-
-```
-pip install rewards==0.0.7
-```
-
-This command may not work if you have a version lower than 3.10.0.
-Howver, you can try to run the following:
-
-```
-pip install rewards
+```bash
+pip install --upgrade rewards
 ```
 
-Test it out with the following code in a new Python file such as `example.py`:
+This should install the latest version of rewards. After this in few lines of code you can get started by ceating your first experiment. 
 
-1. Import the workflow module from rewards
 
-First you call our sdk's `workflow` module. The workflow module helps us to 
+> rewards currently only support it's own racing environment. Support for more environments, custom environment and gym will come in next version.
 
-- Create Environments and configure environments
-- Create models and configure them 
-- Run the whole experiment and log all the results 
 
-```
-from rewards import workflow
-```
 
-2. Define your reward function. Here's a sample for your reference:
+First import our `workflow` module. The workflow module will create setup an experimentation setup for a specific RL environment. This mainly stores the **configuration**, **metrics**, **reward functions**, **model weights**,**environment**. Once everything is stored you can easily integrate experimentation tracking services **weights and biases** or **neptune.** You can check out those tutorials in our documentation. 
 
-```
-def reward_func(props) -> int:
-    reward = 0
-    if props["isAlive"]:
-        reward = 1
-    obs = props["obs"]
-    
-    else:
-        reward += 0
-        if props["rotationVel"] == 15:
-            reward += 1
-    return reward
-```
+Every experiment expects some sets of configuration. A typical configuration in rewards looks like this:
 
-3. Add your configurations:
-
-```
+```python
 configs = workflow.WorkFlowConfigurations(
     MODE="training", 
     LAYER_CONFIG=[[5, 16], [16, 3]], 
@@ -84,89 +55,146 @@ configs = workflow.WorkFlowConfigurations(
 )
 ```
 
-4. Run your model:
+> Current version of rewards already assumes that it is working on it's car-race environment. In coming version we will provide support for custom env integration. 
 
+Here is the meaning of each of the configuration parameters:
+
+**`Mode`**:  This states in which mode our experiment will run on. There are two types: `training` and `evaluation`. In training, the agent can run for multiple episodes and goes for the deep learning optimization. In `evaluation` mode, there is no further optimization and it runs for a single episode. 
+
+**`LAYER_CONFIG`**: Current version of rewards supports a simple neural network builder. We already assume that the input and output layer will have no of neurons of 5 and 3 respectively. Rest every number of neurons and layers can be configured.
+
+**`CHECKPOINT_FOLDER_PATH`**:  Specifies where the model checkpoints will be saved. By default it is None. If changed then it will save the model on that specific path.
+
+**`CHECKPOINT_MODEL_NAME`**: The name of the model that is to be saved. By default the name is setup to be as `model.pth`. 
+
+**`NUM_EPISODES`**: The number of episodes the model should be trained. 
+
+**`CAR_SPEED`**: The speed of the car while traning. The range of the speed lies from 1 to 100. It is recommended to train the agent with lower speed initially and gradually increase the speed for more generalised agent. 
+
+**`REWARD_FUNCTION`**: Reward function is a function that powers reinforcement learning agents learn about the environment. Better the reward function better the learning. A sample reward function should look this:
+
+```python
+def reward_func(props) -> int:
+    reward = 0
+    if props["isAlive"]:
+        reward = 1
+    obs = props["obs"]
+    if obs[0] < obs[-1] and props["dir"] == -1:
+        reward += 1
+        if props["rotationVel"] == 7 or props["rotationVel"] == 10:
+            reward += 1
+    elif obs[0] > obs[-1] and props["dir"] == 1:
+        reward += 1
+        if props["rotationVel"] == 7 or props["rotationVel"] == 10:
+            reward += 1
+    else:
+        reward += 0
+        if props["rotationVel"] == 15:
+            reward += 1
+    return reward
 ```
+
+Here `props` represents properties. This includes the properties of the agent. Here is the car. The properties include `isAlive` (whether the game finished or not), `obs` (current radar observation), `dir` (current car direction) `rotationVel` (Car's rotational velocity)
+
+**`PYGAME_WINDOW_TYPE`**: There are two types. `display` takes out the pygame window while training the agent. Where as `surface` streams the pygame window streams as image to show to somewhere else. Usecases include to integrate to other platforms or saves as video. 
+
+**`ENVIRONMENT_WORLD`**: The type of the track that is to be choosen. For `training` there are three options 1/2/3. For evaluation there is one option: 1. 
+
+**`SCREEN_SIZE`**: The size of the pygame window screen. 
+
+**`GAMMA`**: A discount factor that determines the importance of future rewards in the RL algorithm.
+
+**`EPSILON`**: A probability value used in the epsilon-greedy strategy to balance exploration and exploitation.
+
+**`LR`**: Learning rate, A hyperparameter that controls the step size in updating the weights of a neural network during training.. 
+
+
+
+After configuring all the configurations and writing the reward function we call the `rewads.workflow.RLWorkFlow` module that will take all the configurations and start the experiments. 
+
+```python
 flow = workflow.RLWorkFlow(configs)
 flow.run_episodes()
 ```
 
-**NOTE**: 
-Currently this version of **`rewards`** only supports a single game and environment. That is `car-race`. We will be adding support for more environments (including gym, unity, and custom environments) very soon. 
+****
 
+## **Setting up the project locally**
 
-**Here is the table of configuration and what they means** 
+Setting up rewards is very easy. All you have to do is to first create a virtual environment. Creating a virtual environment is very easy:
 
-| Configuration Name | TYPE            | What it does                                                                                                                                                                                                                                   | Default value                                                                                              | Options                                                                                                                                                                                                                                                                               |
-| ------------------ | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| EXPERIMENT_NAME    | str             | It tells what is the name of the experiment. The name of the experiment will be logged inside the user's weights and biases projects dashboard.                                                                                                     | sample RL experiment                                                                                       | any string                                                                                                                                                                                                                                                                            |
-| ENVIRONMENT_NAME   | str             | It states the name of the environment. `rewards:v1.0.0` only supports one environment for now and that is `car-race`.                                                                                                                          | car-race                                                                                                   | NULL                                                                                                                                                                                                                                                                                  |
-| ENVIRONMENT_WORLD  | int             | According to our convention we keep some environments for training and some for testing (which are unseen). At one point of time, you can only train your agent on one single train environment.                                               | 1                                                                                                          | 0/1/2                                                                                                                                                                                                                                                                                 |
-| MODE               | str             | This tells us which mode the agent is running i.e. either in train or test mode.                                                                                                                                                          | training                                                                                                   | training/testing                                                                                                                                                                                                                                                                      |
-| CONTROL SPEED      | float           | For our car environment, user can set the control speed of the car environment.                                                                                                                                                                 | 0.05                                                                                                       | (0 - 1]                                                                                                                                                                                                                                                                               |
-| TRAIN_SPEED        | int             | For our car environment user can set the control speed of the car environment.                                                                                                                                                                 | 100                                                                                                        | 1 - 100                                                                                                                                                                                                                                                                               |
-| SCREEN_SIZE        | Tuple           | The size of the pygame window.                                                                                                                                                                                                                 | (800, 700)                                                                                                 | User' choice                                                                                                                                                                                                                                                                          |
-| LR                 | float           | Learning rate                                                                                                                                                                                                                                  | 0.01                                                                                                       | User' choice                                                                                                                                                                                                                                                                          |
-| LOSS               | str             | Loss function name                                                                                                                                                                                                                             | mse                                                                                                        | mse , rmse, mae                                                                                                                                                                                                                                                    |
-| OPTIMIZER          | str             | Optimizer name                                                                                                                                                                                                                                 | adam                                                                                                       |adam, rmsprop, adagrad                                                                                                                                                                                                                                            |
-| GAMMA              | float           | Hyper parameter `gamme` value                                                                                                                                                                                                                  | 0.99                                                                                                       | 0 - 1                                                                                                                                                                                                                                                                                 |
-| EPSILON            | float           | Hyper parameter `epsilon` value                                                                                                                                                                                                                | 0.99                                                                                                       | 0 - 1                                                                                                                                                                                                                                                                                 |
-| LAYER_CONFIG       | List[List[int]] | This expects a list of list. Where the inner list will have only two values [input neurons, output neurons]. This configuration will help us to build the neural network for our agent. The first value for the current environment must be 3. | [[5, 64], [64, 3]] | Here user can add more values but the values `5` in the first and `3` in the last must be fixed for this current environment that we are supporting. Example: <br> `[[5, ...], [..., ...], ...., [..., 3]]`, <br> Where `...` can be any value. We recommend to keep it between (1 - 256) |
-| CHECKPOINT_PATH    | str             | The model checkpoint path from where it should be loaded.                                                                                                                                                                                      | `./models`                                                                                                 | User's choice                                                                                                                                                                                                                                                                         |
-| REWARD_FUNCTION    | Callable        | Users are expected to write some reward function (Callable) and then have to use this reward function for agent's training.|  ```def default_reward_function(props): if props["isAlive"]: return 1 return 0 ```| User's choice <br> **some important parameters** <br><br> `isAlive` represents whether the car is alive or not. So on that basis we can penalize our agent. <br><br> `obs` The car's radar's oberservations values. (more on documentation) <br> <br>`rotationVel` Car's rotational velocity value (more on documentation)        |
-
-
-The above is a quick overview of how to use different reward configurations. Now once the configuration part is done, load those configuration to `RLWorkFlow()` and run for a single episodes. 
-
-
-## For Potential COntributors
-
-Although the repository is not currently taking open source contributions, the creators envision to make it entirely open sourced in the near future. If you wish to get familiar with the code base and possibly contribute, you may follow the given steps:
-
-### **Installation** 
-
-**`[linux]`** 
-
-Installing `rewards` is easy in linux. First clone the repository by running 
+**`[LINUX]`**
 
 ```bash
-git clone https://github.com/rewards-ai/rewards-SDK.git
+```bash
+$ virtualenv .rewards
+$ source .rewards/bin/activate
 ```
-One cloned go to the repository and make sure `make` is installed. If not installed just run:
+```
+
+**`[WINDOWS]`**
 
 ```bash
-sudo apt install cmake 
-```
-
-Once done, now create a new virtual environment and install dependencies. You can achieve
-this by running the following:
-
-```bash
-make virtualenv
-make install 
-```
-This should install all the dependencies and our sdk `rewards:v1.0.0`. 
-
-<br>
-
-**`[windows]`** 
-
-For installation in windows, it's also simple. All you have to do is just clone the repository same as before. Then create a new virtual environment. 
-
-```bash
-virtualenv .venv
-```
-
-Load the virtual environment 
-```
+virtualenv .rewards
 .\venv\Scripts\Activate
 ```
-Now go to the repository and install all the dependencies and the `rewards`s package.
+
+After this clone the repository. To clone the repo and move inside the directory, just type the command: 
 
 ```bash
-pip install -r requirements.txt
-python setup.py install
+$ git clone https://github.com/rewards-ai/rewards-SDK.git
+$ cd rewards-SDK
 ```
 
-<br>
+You should have poetry to install all the dependencies. If poetry is not installed then install it by: 
 
+```bash
+pip install poetry
+```
+
+After this install all the dependencies by:
+
+```bash
+poetry install
+```
+
+That's it. After this latest version of `rewards` get's installed and you can work on the top of it. 
+
+---
+
+## **Contributing**
+
+We will be very happy to expand the rewards community as soon as possible. Right now we expect contribution in terms of adding:
+
+- Tests : Provide test scripts for testing our current rewards package.
+
+- Feature requests : Feel free to request more features in the issues tab. 
+
+- Documentation : We are a beginner first organisation. Our documentation not only focuses on how to use rewards in their RL workflow but also to learn and get started with RL at the same time. So if you are interested in contributing that, please feel free to do so. 
+
+### **How to build the docs**
+
+rewards uses `docusaurus` to create the docs. Go inside the `docs/` folder and build the docs by installing the dependencies and start the docs server.
+
+```bash
+$ npm i
+$ npm run start
+```
+
+---
+
+## **Roadmap**
+
+rewards is under heavy developement and updates get rolled very frequently. We are currently focussed on building our sdk such that it supports our other projects that includes `rewards-api` and `rewards-platform`. But here are the major changes and updates we are looking forward. 
+
+- [ ] Introducing more games / environments under rewards 
+
+- [ ] Intoducing integration with other custom pygame environments
+
+- [ ] Support for Open AI gym environments 
+
+- [ ] More RL algorithms (other than DQN)
+
+- [ ] Better experimentation managing 
+
+- [ ] Support for stable baseline 

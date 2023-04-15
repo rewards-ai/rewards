@@ -1,45 +1,69 @@
-import math
+
 import os
-import time
-from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
-
-import matplotlib.pyplot as plt
+import math
 import pygame
-
-plt.ion()
-pygame.init()
-
-# TODO:
-# - Add Hydra for General Game Configuration management (This will help for writing less code and also adding custom game environments)
-# - Make a general class of Track that will contain all the Track related information about PyGame
-# - We do not need a secondary screen. right now we have `pygame.display` but we need to replace it by `pygame.surface` in later versions
-# - (IMPORTANT) Inhering dataclass is not working.
+from pathlib import Path
+import matplotlib.pyplot as plt
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 
 class CarConfig:
-    def __init__(self):
+    def __init__(
+            self,
+            display_type: Optional[str] = None,
+            screen_size: Optional[Tuple[int, int]] = None) -> None:
+        """
+        Car environment configurations where the agent will be trained. 
+
+        Args:
+            param:(display_type) : Optional[str] : Whether to pop up a window or return the screen as a stream 
+            There are two options available ("display", "surface"). 
+            Using `display` will create a pygame window. This is used when SDK is used directly for training. 
+            Using `surface` will generate a stream of pygame display. This can be used when the pygame screen is used 
+            for recording purposes or some other. 
+
+            param:(screen_size) : Optional[Tuple[int, int]] : The size of the screen. The default screen is taken 
+            as (800, 700)
+
+        TODO: 
+        -----
+            - Use Hydra for default configuration management
+            - Implement support for custom environments tracks 
+            - Cusom Car configuration support including radars (can be implemented)
+            - Is FPS is same as CAR_SPEED ? 
+            - What is CAR_ANGLE?
+            - Provide the documentation for car skeleton configuration and what each of them does 
+        """
+
         # Global Path
         self.PARENT_PATH: str = Path(__file__).parent.parent
 
-        # Initial Car and Game Configuration
+        # Car Assets path
         self.ASSET_PATH: str = str(
             os.path.join(self.PARENT_PATH, "assets/CarRace")
         )
+
+        # Car default configuration (remains unchanged)
+
         self.CAR_SCALE: int = 500
-        self.SCREEN_SIZE: Tuple[int, int] = (800, 700)
-        self.CAR_TRACKS: Dict[int, str] = {
-            0: "track-1.png",
-            1: "track-2.png",
-            2: "track-3.png",
-        }
-
         self.CAR_IMAGE: str = "car.png"
-
-        # Car Configuration
         self.DRIVE_FACTOR: int = 12
         self.CAR_FPS: int = 15
         self.CAR_ANGLE: int = 0
+
+        # Training and evaluation environment paths
+
+        self.TRAINING_CAR_TRACKS: Dict[int, str] = {
+            1: "track-1.png",
+            2: "track-2.png",
+            3: "track-3.png",
+        }
+
+        self.EVALUATION_CAR_TRACKS: Dict[int, str] = {
+            1: "track-1.png"
+        }
+
+        # Car Skeleton configuration
 
         self.CAR_RECT_SIZE: Tuple[int, int] = (200, 50)
         self.CAR_VELOCITY_VECTOR: Tuple[float, float] = (0.8, 0.0)
@@ -49,135 +73,161 @@ class CarConfig:
         self.CAR_REWARD: int = (0,)
         self.CAR_RADAR: List[Union[int, float]] = [0, 0, 0, 0, 0]
 
+        # Pygame display screen configuration
 
-######################### Track Class #########################
+        self.PYGAME_SCREEN_TYPE: str = "display" if display_type is None else display_type
+        self.SCREEN_SIZE: Tuple[int, int] = (
+            800, 700) if screen_size is None else screen_size
 
 
-class Track(CarConfig):
-    def __init__(self, track_num: int = 0):
-        """Car Track which is a PyGame under which the agent will operate
-
-        Once intialized all the selected configs will return a json and will save inside the local
-        Args:
-            track_num (int, optional): Which track to choose. Track Options [0, 1, 2]. Defaults to 0.
+class CarGame(CarConfig):
+    def __init__(
+            self,
+            track_num: int,
+            mode: str,
+            reward_function: Optional[Callable] = None,
+            display_type: Optional[str] = None,
+            screen_size: Optional[Tuple[int, int]] = None) -> None:
         """
-        super(Track, self).__init__()
+        Car Game Environment 
+        --------------------
+        Meet reward's car-game environment. There are mainly 4 main types of operations under which this 
+        environment operates. Those are as follows:
 
-        print(self.ASSET_PATH)
-        print(self.CAR_ANGLE)
-        print(self.CAR_VELOCITY_VECTOR)
-        print(self.CAR_TRACKS)
+            - `isAlive` : This parameter determine whether the game is finished or not
+            - `obs` : This represents the car's current observation. 
+            - `dir` : This represents the car's current direction 
+            - `rotationVel` : This represents the current rotational velocity of the car.
 
+        The above four parameter are very much important as that will be used for writing custom writing 
+        reward function by the user. 
+
+        Args:
+            param:(track_num) : int : Which training track will be used for training or validation. 
+            For training there are three tracks options supported (1,2,3) and for evaluation only (1)
+            track is supported
+
+            param:(mode) : str: There are two options: (training / evaluation). Based on this the 
+            car's environment will be choosen. 
+
+            param:(reward_function) : Optional[Callable], optional : reward function on which the car
+            will do it's scoring Defaults to None. This parameter expects a function with argument props
+            where props is of type Dict containing the above parameters (isAlive, obs, dir, rotationVel)
+
+            param:(display_type) : Optional[str], optional: The type of the display that is to be used. There 
+            are two options available ("surface", "display"). 
+            Using `display` will create a pygame window. This is used when SDK is used directly for training. 
+            Using `surface` will generate a stream of pygame display. This can be used when the pygame screen 
+            is used for recording purposes or some other. 
+
+            param:(screen_size) : Optional[Tuple[int, int]] : The size of the screen. The default screen is taken 
+            as (800, 700)
+        """
+
+        if mode != "training" and mode != "evaluation":
+            raise ValueError("mode must be either `training` or `evaluation`")
+
+        # print(display_type == "surface")
+        # if display_type != "display" and mode != "surface":
+        #     raise ValueError("display must be either `display` or `surface`")
+
+        if mode == "training" and (track_num < 1 or track_num > 3):
+            raise ValueError(
+                "`training` mode only supports three types of environment: Options: (1,2,3)")
+
+        if mode  == "evaluation" and track_num != 1:
+            raise ValueError(
+                "`evaluation` mode only supports one type of environment: Options: (1)")
+
+        super(CarGame, self).__init__(
+            display_type=display_type, screen_size=screen_size)
+        
+        self.mode = mode
+        
+        # Loading car and track path
+        self.track_options = self.TRAINING_CAR_TRACKS if mode == "training" else self.EVALUATION_CAR_TRACKS
         self.track_image_path = os.path.join(
-            self.ASSET_PATH, self.CAR_TRACKS[track_num]
+            self.ASSET_PATH, mode, self.track_options[track_num]
         ).replace(os.sep, '/')
-
         self.car_image_path = os.path.join(self.ASSET_PATH, self.CAR_IMAGE)
 
+        # building track and car path
         self.track_image = pygame.image.load(self.track_image_path)
         self.car_image = pygame.transform.scale(
-            pygame.image.load(self.car_image_path),
-            (self.CAR_SCALE, self.CAR_SCALE),
+            pygame.image.load(
+                self.car_image_path), (self.CAR_SCALE, self.CAR_SCALE),
         )
 
-    def track(self):
-        return self.track_image
-
-    def track_checkpoint(self, car):
-        visited = []
-
-
-####################### CarGame #########################
-
-
-class CarGame(Track):
-    def __init__(
-        self,
-        frame: Optional[Any] = None,
-        track_num: Optional[int] = 0,
-        reward_func: Optional[Union[str, Callable]] = None,
-    ) -> None:
-        """### CarGame Environment:
-
-        This is the reward's CarGame environment. There are mainly 4 main types of operations under which this environment operates.
-        Those are as follows:
-
-        - `is_alive` : This parameter determine whether the game is finished or not
-        - `observation` : This parameter will return the current state of the car which are the radar's angular values and direction.
-        - `direction` : This parameter will return the direction of the car.
-        - `rotational_velocity` : This parameter will return the current rotational velocity of the car.
-
-        The reward will be calculated under these above parameters. Our default reward function calculates reward upon playing each step.
-        Although it does not make the agent learn anything. So we expect users to use their custom reward function to make the
-        car agent to gain max reward and make it go brumm brummm !!
-
-        Rewards has three different training environments to make the agent learn. It also has 2 Test environments for testing.
-        In the future version we will let user to make/design their own car training environment and train their agents their.
-
-        Args:
-            frame (Optional[Any], optional): The current pygame frame. Defaults to None.
-            track_num (Optional[int], optional): The . Defaults to 0.
-            reward_func (Optional[Union[str, Callable]], optional): The reward function. Defaults to None.
-        """
-
-        # we need to also keep in track with the track's default asset parent folder path and it's other paths
-        # we also need to design a way where user can make their own environment asset and use them by sucessfully integrating them to rewards
-
-        super(CarGame, self).__init__(track_num=track_num)
-
-        self.screen = pygame.display.set_mode(self.SCREEN_SIZE)
+        # Building PyGame screen
+        self.screen = pygame.display.set_mode(
+            self.SCREEN_SIZE) if self.PYGAME_SCREEN_TYPE == "display" else pygame.Surface(self.SCREEN_SIZE)
+        
         self.screen.fill((0, 0, 0))
+
+        # All the car configurations
+        self.angle = self.CAR_ANGLE
+        self.original_image = self.car_image
+       
+        self.image = pygame.transform.rotozoom(self.original_image, self.angle, 0.1)
+        self.rect = self.image.get_rect(center=self.CAR_RECT_SIZE)
+        self.vel_vector = pygame.math.Vector2(self.CAR_VELOCITY_VECTOR)
+        self.rotation_vel = self.CAR_ROTATION_VELOCITY
+        
+        self.direction = self.CAR_DIRECTION
+        self.drive_factor = self.DRIVE_FACTOR
+        self.alive = self.CAR_IS_ALIVE
+        self.radars = self.CAR_RADAR
+        self.reward = 0
+
+        # Additional configuration
+        self.clock = pygame.time.Clock()
+        self.track = self.track_image
+        self.iterations = 0
+        self.FPS = self.CAR_FPS
+
+        # Initial parameter for reward function
         self.params = {
             "is_alive": None,
             "observation": None,
             "direction": None,
             "rotational_velocity": None,
         }
+        self.reward_function = self._default_reward_function if reward_function is None else reward_function
 
-        # TODO: Change this (car_image, original_image, image confusion and make proper usage and naming of the variables)
+    def _default_reward_function(self, props: Dict[str, Any]) -> Union[int, float]:
+        """
+        Default reward function that will be used if no custom reward function is provided. This is a very simple 
+        reward function where if the agent is alive then the reward will be 1 else 0. 
 
-        self.angle = self.CAR_ANGLE
-        self.original_image = self.car_image
-        self.image = pygame.transform.rotozoom(
-            self.original_image, self.angle, 0.1
-        )
-        self.rect = self.image.get_rect(center=self.CAR_RECT_SIZE)
-        self.vel_vector = pygame.math.Vector2(self.CAR_VELOCITY_VECTOR)
-        self.rotation_vel = self.CAR_ROTATION_VELOCITY
+        Args:
+            props (Dict[str, Any]): Properties of the agent to see in the environment. Here are the properties:
+                - `isAlive` : This parameter determine whether the game is finished or not
+                - `obs` : This represents the car's current observation. 
+                - `dir` : This represents the car's current direction 
+                - `rotationVel` : This represents the current rotational velocity of the car.
 
-        self.direction = self.CAR_DIRECTION
-        self.drive_factor = self.DRIVE_FACTOR
-        self.alive = self.CAR_IS_ALIVE
-        self.reward = 0
-        self.radars = self.CAR_RADAR
-
-        self.clock = pygame.time.Clock()
-        self.track = self.track_image
-        self.FPS = self.CAR_FPS
-        self.iterations = 0
-        self.reward_func = (
-            self._default_reward_func
-        )  # (self._default_reward_func if reward_func is None else reward_func)
+        Returns:
+            Union[int, float]: reward that the agent got. 
+        """
+        if props["isAlive"]:
+            return 1
+        return 0
 
     def initialize(self) -> None:
-        """Initializes the game state from where it had started"""
-        # The below needs to change as this will do those flikering stuffs
-        # self.screen = pygame.display.set_mode(self.SCREEN_SIZE)
-
+        """
+        Initializes the car environment with all the default properties
+        """
         self.angle = self.CAR_ANGLE
         self.original_image = self.car_image
-        self.image = pygame.transform.rotozoom(
-            self.original_image, self.angle, 0.1
-        )
+        self.image = pygame.transform.rotozoom(self.original_image, self.angle, 0.1)
         self.rect = self.image.get_rect(center=self.CAR_RECT_SIZE)
         self.vel_vector = pygame.math.Vector2(self.CAR_VELOCITY_VECTOR)
         self.rotation_vel = self.CAR_ROTATION_VELOCITY
-
         self.direction = self.CAR_DIRECTION
         self.drive_factor = self.DRIVE_FACTOR
         self.alive = self.CAR_IS_ALIVE
-        self.reward = 0
         self.radars = self.CAR_RADAR
+        self.reward = 0
 
     def _did_quit(self):
         """
@@ -187,40 +237,15 @@ class CarGame(Track):
             if event.type == pygame.QUIT:
                 pygame.quit()
 
-    def _default_reward_func(self, props: Dict[str, Any]) -> int:
-        """Default reward function initialised if the user does not provide any reward function
-        NOTE: This function does not let the agent train or learn anything. It is just a dummy reward function
-
-        Args:
-            props (Dict[str, Any]): properties as arguments containing a dict of parameter
-
-        Returns:
-            int: The reward
-        """
-        reward = 0
-        if props["isAlive"]:
-            reward = 1
-        obs = props["obs"]
-        if obs[0] < obs[-1] and props["dir"] == -1:
-            reward += 1
-            if props["rotationVel"] == 7 or props["rotationVel"] == 10:
-                reward += 1
-        elif obs[0] > obs[-1] and props["dir"] == 1:
-            reward += 1
-            if props["rotationVel"] == 7 or props["rotationVel"] == 10:
-                reward += 1
-        else:
-            reward += 0
-            if props["rotationVel"] == 15:
-                reward += 1
-        return reward
-
     def _did_collide(self):
-        """Checks the status whether the car collied or not
-        If the car collides, then `isAlive` is False and game terminates.
         """
+        Checks the status whether the car collied or not. If the car collides, 
+        then `isAlive` is False and game terminates.
 
-        # TODO: This function needs to be checked
+        TODO: 
+        -----
+        - This function needs to be checked
+        """
 
         length = 20  # parameter to be know n
         collision_point_right = [
@@ -264,8 +289,13 @@ class CarGame(Track):
             self.alive = False
 
     def _did_rotate(self):
-        """Checks whether the car rotates off the track and took wrong direction or not"""
-        # TODO: The function implementation needs to be checked
+        """
+        Checks whether the car rotates off the track and took wrong direction or not
+
+        TODO: 
+        -----
+        The function implementation needs to be checked
+        """
 
         if self.direction == 1:
             self.angle -= self.rotation_vel
@@ -280,22 +310,21 @@ class CarGame(Track):
         self.rect = self.image.get_rect(center=self.rect.center)
 
     def _update_radar(self, i: int, radar_angle: Union[int, float]) -> None:
-        """The Car is made up of 6 radars. At every step this functions updates the radar to get the current direction and
-        also updates the overall current status of the car.
+        """
+        The Car is made up of 6 radars. At every step this functions updates the radar to get 
+        the current direction and also updates the overall current status of the car.
 
         Args:
             i (int): The current index number
             radar_angle (Union[int, float]): The current angles in the radar.
-
-        Returns:
-            None
         """
         length = 0
         x = int(self.rect.center[0])
         y = int(self.rect.center[1])
         try:
             while (
-                not self.screen.get_at((x, y)) == pygame.Color(173, 255, 133, 255)
+                not self.screen.get_at(
+                    (x, y)) == pygame.Color(173, 255, 133, 255)
                 and length < 200
             ):
                 length += 1
@@ -324,9 +353,13 @@ class CarGame(Track):
             self.alive = False
 
     def _drive(self):
-        """Drives the car's center vector to the next state"""
-        # TODO: Need to check why the value is 12 and nothing else
-        self.rect.center += self.vel_vector * 12
+        """
+        Drives the car's center vector to the next state
+        TODO
+        ----
+        - Need to check why the value is 12 and nothing else
+        """
+        self.rect.center += self.vel_vector * self.drive_factor
 
     def draw(self) -> None:
         """
@@ -339,11 +372,13 @@ class CarGame(Track):
         self.clock.tick(self.FPS)
 
     def get_current_state(self, action: List[int]) -> Dict[str, Any]:
-        """Returns the current state of the car. This states are determined the parameters of the Car mentioned below:
-            - `is_alive` : This parameter determine whether the game is finished or not
-            - `observation` : This parameter will return the current state of the car which are the radar's angular values and direction.
-            - `direction` : This parameter will return the direction of the car.
-            - `rotational_velocity` : This parameter will return the current rotational velocity of the car.
+        """
+        Returns the current state of the car. This states are determined the parameters 
+        of the Car mentioned below:
+            - `isAlive` : This parameter determine whether the game is finished or not
+            - `obs` : This represents the car's current observation. 
+            - `dir` : This represents the car's current direction 
+            - `rotationVel` : This represents the current rotational velocity of the car.
         Where each of the parameters are the keys of the dictionary returned by this function.
 
         Args:
@@ -397,8 +432,9 @@ class CarGame(Track):
 
         return self.params
 
-    def play_step(self, action: List[int]) -> List[Any]:
-        """Plays a single step of the game. This function is called by the agent during each step.
+    def play_step(self, action: List[str]) -> List[Any]:
+        """
+        Plays a single step of the game. This function is called by the agent during each step.
 
         Args:
             action (List[int]): The current action of the agent
@@ -407,18 +443,19 @@ class CarGame(Track):
             List[Any]: [current_reward, is_alive, overall_reward]
         """
         self.iterations += 1
-        self._did_quit()
+        
+        if self.PYGAME_SCREEN_TYPE == "display":
+            self._did_quit()
         self.draw()
-        self.radars = [
-            0,
-            0,
-            0,
-            0,
-            0,
-        ]  # TODO: We have already initialised radars before, is there any need to initialize it here.
+        self.radars = [0, 0, 0, 0, 0]
         self._drive()
 
         current_state_params = self.get_current_state(action=action)
-        current_reward = self.reward_func(current_state_params)
+        current_reward = self.reward_function(current_state_params)
         self.reward += current_reward
-        return current_reward, not self.alive, self.reward
+
+        if self.PYGAME_SCREEN_TYPE == "surface":
+            pixel_data = pygame.surfarray.array3d(self.screen)
+            return current_reward, not self.alive, self.reward, pixel_data
+        else:
+            return current_reward, not self.alive, self.reward
