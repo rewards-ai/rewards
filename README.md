@@ -116,20 +116,8 @@ Currently this version of **`rewards`** only supports a single game and environm
 | REWARD_FUNCTION    | Callable        | Users are expected to write some reward function (Callable) and then have to use this reward function for agent's training.|  ```def default_reward_function(props): if props["isAlive"]: return 1 return 0 ```| User's choice <br> **some important parameters** <br><br> `isAlive` represents whether the car is alive or not. So on that basis we can penalize our agent. <br><br> `obs` The car's radar's oberservations values. (more on documentation) <br> <br>`rotationVel` Car's rotational velocity value (more on documentation)        |
 
 
-So above is a quick overview of how to use different reward configurations. Now once the configuration part is done, load those configuration to `RLWorkFlow()` and run for a single episodes. 
-**NOTE:** Make sure you have `weights and biases` installed. You can install that using:
+The above is a quick overview of how to use different reward configurations. Now once the configuration part is done, load those configuration to `RLWorkFlow()` and run for a single episodes. 
 
-```bash
-pip install wandb
-```
-
-After this log in / create a new account. Then authorize it inside the command line by typing
-
-```bash
-wandb login
-```
-
-Here you will be able to see the game, and a very nice dashboard with all the runs and configurations and nice graphs. Stay tuned with `rewards.ai` for further updates, documentation and examples. 
 
 ## For Potential COntributors
 
