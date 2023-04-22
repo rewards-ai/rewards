@@ -74,7 +74,7 @@ Here is the meaning of each of the configuration parameters:
 **`REWARD_FUNCTION`**: Reward function is a function that powers reinforcement learning agents learn about the environment. Better the reward function better the learning. A sample reward function should look this:
 
 ```python
-def reward_func(props) -> int:
+def reward_function(props) -> int:
     reward = 0
     if props["is_alive"]:
         reward = 1
