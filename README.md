@@ -76,20 +76,20 @@ Here is the meaning of each of the configuration parameters:
 ```python
 def reward_func(props) -> int:
     reward = 0
-    if props["isAlive"]:
+    if props["is_alive"]:
         reward = 1
-    obs = props["obs"]
-    if obs[0] < obs[-1] and props["dir"] == -1:
+    obs = props["observation"]
+    if obs[0] < obs[-1] and props["direction"] == -1:
         reward += 1
-        if props["rotationVel"] == 7 or props["rotationVel"] == 10:
+        if props["rotational_velocity"] == 7 or props["rotational_velocity"] == 10:
             reward += 1
-    elif obs[0] > obs[-1] and props["dir"] == 1:
+    elif obs[0] > obs[-1] and props["direction"] == 1:
         reward += 1
-        if props["rotationVel"] == 7 or props["rotationVel"] == 10:
+        if props["rotational_velocity"] == 7 or props["rotational_velocity"] == 10:
             reward += 1
     else:
         reward += 0
-        if props["rotationVel"] == 15:
+        if props["rotational_velocity"] == 15:
             reward += 1
     return reward
 ```
