@@ -74,22 +74,22 @@ Here is the meaning of each of the configuration parameters:
 **`REWARD_FUNCTION`**: Reward function is a function that powers reinforcement learning agents learn about the environment. Better the reward function better the learning. A sample reward function should look this:
 
 ```python
-def reward_func(props) -> int:
+def reward_function(props) -> int:
     reward = 0
-    if props["isAlive"]:
+    if props["is_alive"]:
         reward = 1
-    obs = props["obs"]
-    if obs[0] < obs[-1] and props["dir"] == -1:
+    obs = props["observation"]
+    if obs[0] < obs[-1] and props["direction"] == -1:
         reward += 1
-        if props["rotationVel"] == 7 or props["rotationVel"] == 10:
+        if props["rotational_velocity"] == 7 or props["rotational_velocity"] == 10:
             reward += 1
-    elif obs[0] > obs[-1] and props["dir"] == 1:
+    elif obs[0] > obs[-1] and props["direction"] == 1:
         reward += 1
-        if props["rotationVel"] == 7 or props["rotationVel"] == 10:
+        if props["rotational_velocity"] == 7 or props["rotational_velocity"] == 10:
             reward += 1
     else:
         reward += 0
-        if props["rotationVel"] == 15:
+        if props["rotational_velocity"] == 15:
             reward += 1
     return reward
 ```
@@ -121,6 +121,7 @@ flow.run_episodes()
 
 ## **Setting up the project locally**
 
+
 Setting up rewards is very easy. All you have to do is to first create a virtual environment. Creating a virtual environment is very easy:
 
 **`[LINUX]`**
@@ -145,8 +146,6 @@ After this clone the repository. To clone the repo and move inside the directory
 $ git clone https://github.com/rewards-ai/rewards-SDK.git
 $ cd rewards-SDK
 ```
-
-You should have poetry to install all the dependencies. If poetry is not installed then install it by: 
 
 ```bash
 pip install poetry
