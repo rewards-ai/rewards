@@ -6,7 +6,7 @@ Getting started with RL is quite easy now a days. The workflow stays almost same
 So the bottleneck mostly lies in the environment creation, integrating the environment with different libraries like `gymnasium` to make agents around it and finding that best reward function. It becomes very hectic to manage all these experimentation process all by yourself. 
 Introducing **rewards**, a low code RL training and experimentation platform powered by rewards.ai, rewards lets us to do those in some few lines of code. Manage all your RL experimentation and integration code in just few lines of code.
 
-### Getting started
+## **Getting started**
 
 Oh that's very easy. First install rewards:
 
@@ -176,6 +176,7 @@ And wallah, you have successfully trained your first agent using rewards.
 
 Setting up rewards is very easy. All you have to do is to first create a virtual environment. Creating a virtual environment is very easy:
 **`[LINUX]`**
+
 
 ```bash
 $ virtualenv .rewards
