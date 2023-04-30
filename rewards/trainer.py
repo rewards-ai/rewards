@@ -1,3 +1,18 @@
+# coding=utf-8
+# Copyright 2023-present rewards.ai. team.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import os
 import random
 from typing import Any, List, Union
@@ -8,7 +23,6 @@ import torch.nn as nn
 import torch.optim as optim
 
 from .agent import Agent
-from .envs.car import CarGame
 
 # TODO:
 # - Move RMSE, MAE to utils module
@@ -158,7 +172,7 @@ class QTrainer(Agent):
         """
         return self.step(state, action, reward, next_state, done)
 
-    def train_step(self, game: CarGame) -> List[Union[int, float, bool]]:
+    def train_step(self, game) -> List[Union[int, float, bool]]:
         """
         Defines a single train step for an agent where the agent performs
         some action in a given state to get next state, current rewards, and
