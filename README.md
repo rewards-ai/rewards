@@ -4,7 +4,7 @@
 
 Getting started with RL is quite easy now a days. The workflow stays almost same. You create your environment. This environment is either used for from Open AI's `gym` or we make custom environment using `pygame` and `unity`. After environment creation we go for making deep RL agents, by creating our model using `tensorflow` or `pytorch` etc. 
 
-So the bottleneck mostly lies in the environment creation, integrating the environment with different libraries like `gym` to make agents around it and finding that best reward function. It becomes very hectic to manage all these experimentation process all by yourself. 
+So the bottleneck mostly lies in the environment creation, integrating the environment with different libraries like `gymnasium` to make agents around it and finding that best reward function. It becomes very hectic to manage all these experimentation process all by yourself. 
 
 Introducing **rewards**, a low code RL training and experimentation platform powered by rewards.ai, rewards lets us to do those in some few lines of code. Manage all your RL experimentation and integration code in just few lines of code. 
 
@@ -12,7 +12,7 @@ Introducing **rewards**, a low code RL training and experimentation platform pow
 
 - Easy experimentation and integration management in just few lines of code. 
 
-- Integration with **[rewards-platform]([GitHub - rewards-ai/training-platform](https://github.com/rewards-ai/training-platform))** .If you did' check out, think it as the open source alternative of Amazon deep racer. 
+- Integration with **[rewards-platform](https://github.com/rewards-ai/training-platform)** .If you did' check out, think it as the open source alternative of Amazon deep racer. 
 
 - Beginner friendly documentation focussed on learning reinforcement learning.
 
@@ -125,12 +125,12 @@ Setting up rewards is very easy. All you have to do is to first create a virtual
 
 **`[LINUX]`**
 
-```bash
+
 ```bash
 $ virtualenv .rewards
 $ source .rewards/bin/activate
 ```
-```
+
 
 **`[WINDOWS]`**
 
@@ -164,7 +164,7 @@ That's it. After this latest version of `rewards` get's installed and you can wo
 
 ## **Contributing**
 
-We will be very happy to expand the rewards community as soon as possible. Right now we expect contribution in terms of adding:
+Both `rewards` and `rewards_envs` are undergoing through some heavy developement. Being a open source projects we are open for contributions. Write now due to lack of docs, we are unable to come down with some guidelines. We will be doing that very soon. Till then please star this project and play with our sdk. If you find some bugs or need a new feature, then please create a new issue under the issues tab. Right now we expect contribution in terms of adding:
 
 - Tests : Provide test scripts for testing our current rewards package.
 
@@ -185,16 +185,4 @@ $ npm run start
 
 ## **Roadmap**
 
-rewards is under heavy developement and updates get rolled very frequently. We are currently focussed on building our sdk such that it supports our other projects that includes `rewards-api` and `rewards-platform`. But here are the major changes and updates we are looking forward. 
-
-- [ ] Introducing more games / environments under rewards 
-
-- [ ] Intoducing integration with other custom pygame environments
-
-- [ ] Support for Open AI gym environments 
-
-- [ ] More RL algorithms (other than DQN)
-
-- [ ] Better experimentation managing 
-
-- [ ] Support for stable baseline 
+rewards is under heavy developement and updates get rolled very frequently. We are currently focussed on building our sdk such that it supports our other projects that includes `rewards-api` and `rewards-platform`. We want to make rewards as a general repository for RL research and RL education. Most of the RL research are heavily dependent on the environment. After environment creation, practicioners either face lot of issues wraping that environment around `gymnasium` 's custom environment wrapper or create everything of their own. We at rewards want to solve this issue. Through `rewards-sdk` and `rewards_envs` user must be able to create custom environment made using Pygame, Unity or any other engine and integrate it and start/organize RL research in no time.
