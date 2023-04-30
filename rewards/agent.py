@@ -1,114 +1,81 @@
-import os
-import glob 
-import random
+# coding=utf-8
+# Copyright 2023-present rewards.ai. team.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""
+The AgentConf and Agent class are the two classes two create RL/DRL agents and train them on the provided environment. 
+
+TODOs:
+----- 
+- Random.randint -> random.uniform(0, 1) with a SEED 
+- Take the float value of random rather than converting it into int 
+- Implement epsilon decay 
+"""
+
+import torch 
+import random 
+import numpy as np 
+from pathlib import Path 
 from collections import deque
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional, Union 
 
-import numpy as np
-import torch
 
 @dataclass
 class AgentConf:
-    MAX_MEMORY: int = 100000
-    BATCH_SIZE: int = 1000
-    PARENT_PATH: str = str(Path(__file__).parent.parent)
-    DEVICE: str = "cpu"
+    """
+    The AgentConf class ia mainly designed to create plug-n-play agents easily with different configurations. All the different types of 
+    configurations are stored inside this agent configurations in order to initialize an agent before the training. 
+    args:
+        MAX_MEMORY (int) The maximum memory that the agent should hold for exploitation 
+        BATCH_SIZE (int) The number of batches of instances should be trained at once for an agent. 
+        DEVICE (str) Specifies in which device (pytorch backend) to train the model. Defaults to "cpu". 
+        CHECKPOINT_FOLDER_PATH (str) Specifies whetre to store the model checkpoints. Defaults to: ./saved_models 
+        MODEL_NAME (str) Specifies the name of the model to store. Defaults to: model.pth 
+        LEARNING_RATE (float) Specifies the learning rate for the agent 
+        EPSILON (float) Specifies the initial probability value of epsilon for exploration and exploitation tradeoff.
+        GAMMA (float) Specifies discount factor and quantifies how much importance we give for future rewards
+    """
+    MAX_MEMORY: int = 100000  
+    BATCH_SIZE: int = 1000 
+    DEVICE: str = "cpu" 
+    CHECKPOINT_FOLDER_PATH : str = "./saved_models"
+    MODEL_NAME : str = "model.pth"
+    LEARNING_RATE : float = 0.01 
+    EPSILON : float = 0.99
+    GAMMA : float = 0.25 
+    
 
-
-class Agent(AgentConf):
-    def __init__(
-        self,
-        model: torch.nn.Module,
-        checkpoint_folder_path: Optional[str] = None,
-        model_name : Optional[str] = None, 
-        lr: float = 0.01,
-        epsilon: float = 0.25,
-        gamma: float = 0.9,
-    ) -> None:
-        super(Agent, self).__init__()
-        """The Agent class which acts as a RL agent similar like Open AI's gym agent
+class Agent:
+    def __init__(self, model : torch.nn.Module, agent_conf : Optional[AgentConf] = None) -> None:
+        """The Agent class. 
+        Agent class is mainly responsible for creating plug-n-play RL/DRL agents with just few lines of code. You are required to 
+        specify the configuration in which the agent will work, and based on that you can create different agents and track them all 
+        at once. 
 
         Args:
-            model (torch.nn.Module): _description_
-            checkpoint_path (Optional[str], optional): The model checkpoint to load its weight. Defaults to False.
-            lr (float, optional): _description_. Defaults to 0.01
-            epsilon (float, optional): _description_. Defaults to 0.25.
-            gamma (float, optional): _description_. Defaults to 0.9.
+            model (torch.nn.Module): Model architecture and parameters 
+            agent_conf (Optional[AgentConf], optional): The configurations generated from AgentConf class. Defaults to None. (All the default configurations)
         """
-        self.n_games = 0
-        self.epsilon = epsilon
-        self.lr = lr
-        self.gamma = gamma
-
-        self.memory = deque(maxlen=self.MAX_MEMORY)
-        self.model = model
         
-        # Lates changes loading the model directly if exists 
-        self.model.load(checkpoint_folder_path, model_name, self.DEVICE)
         
-    def get_state(self, game: Any) -> np.ndarray:
-        """Returns the current state of the game.
-        NOTE: Some Assumptions:
-        - We assume that the game environment is made using pygame
-        - We also assume that the agent inside the game uses `radars` that keeps track of its all position and other parameters.
+class MultiAgent: 
+    def __init__(self, models : List[torch.nn.Module], agent_confs : List[AgentConf]) -> None:
+        """_summary_
 
         Args:
-            game (rewards.env.car.CarGame): The current game environment of pygame.
-
-        Returns:
-            np.ndarray: An array of the state of the game. Here it is the agent's radars.
+            models (List[torch.nn.Module]): _description_
+            agent_confs (List[AgentConf]): _description_
         """
-
-        # TODO: Check the type of game
-        state = game.radars
-        return np.array(state, dtype=int)
-
-    def remember(
-        self,
-        state: np.ndarray,
-        action: Union[np.ndarray, List[int]],
-        reward: Union[int, float],
-        next_state: np.ndarray,
-        done: bool,
-    ) -> List[Union[float, int]]:
-        """Remmembers the state of the game for the exploration phase of the agent
-
-        Args:
-            state (np.ndarray): The current state of the agent
-            action (Union[np.ndarray, List[int]]): Action taken by the agent
-            reward (Union[int, float]): Reward that the agent gets
-            next_state (np.ndarray): The next state which the agent takes after taking the current action
-            done (bool): Whether the game is finished or not.
-
-        Returns:
-            List[Union[float, int]]: The final move after exploration which is an action
-        """
-        self.memory.append((state, action, reward, next_state, done))
-
-    def get_action(self, state):
-        """
-        Args:
-            state (_type_): _description_
-
-        Returns:
-            _type_: _description_
-        """
-        self.epsilon = 25 # self.epsilon (WHY NOT)
-        final_move = [
-            0,
-            0,
-            0,
-        ]  # TODO: need to make a general array of zeros which matches with the length of action
-
-        if random.randint(0, 100) < self.epsilon:
-            move = random.randint(0, 2)
-            final_move[move] = 1
-        else:
-            state0 = torch.tensor(state, dtype=torch.float)
-            prediction = self.model(state0)
-            move = torch.argmax(prediction).item()
-            final_move[move] = 1
-
-        return final_move
+        raise NotImplementedError 
