@@ -1,0 +1,3 @@
+[submodule "rewards/environments"]
+	path = rewards/environments
+	url = https://github.com/rewards-ai/environments.git
