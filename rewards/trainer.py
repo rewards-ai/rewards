@@ -21,6 +21,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from copy import deepcopy
 
 from .agent import Agent
 
@@ -49,25 +50,27 @@ class MeanAbsoluteError(torch.nn.Module):
 
 
 class QTrainer(Agent):
-    def __init__(self, **training_params):
-        self.lr = training_params["lr"]
-        self.gamma = training_params["gamma"]
-        self.epsilon = training_params["epsilon"]
+    def __init__(self, model, model_name, checkpoint_folder_path, lr=0.001, gamma=0.9, epsilon=0.2, optimizer="adam", loss="mse"):
+        self.lr = lr
+        self.gamma = gamma
+        self.epsilon = epsilon
+        self.model_name = model_name
 
-        self.model = training_params["model"]
+        self.model = deepcopy(model)
         loss_fn, optimizer_info = self._get_loss_optimizer_info(
-            training_params["loss"], training_params["optimizer"]
+            loss, optimizer
         )
         self.criterion = loss_fn()
         self.optimizer = optimizer_info(self.model.parameters(), lr=self.lr)
+        self.checkpoint_folder_path = checkpoint_folder_path
 
         super(QTrainer, self).__init__(
             model=self.model,
             lr=self.lr,
             epsilon=self.epsilon,
             gamma=self.gamma,
-            checkpoint_folder_path=training_params['checkpoint_folder_path'], 
-            model_name=training_params['model_name']
+            checkpoint_folder_path=self.checkpoint_folder_path, 
+            model_name=self.model_name
         )
 
     def _get_loss_optimizer_info(
@@ -128,7 +131,7 @@ class QTrainer(Agent):
         state_prediction = self.model(state)
         state_target = (
             state_prediction.clone()
-        )  # TODO: Why target is the same as prediction?
+        )
 
         for idx in range(len(done)):
             Q_new = reward[idx]
@@ -145,7 +148,7 @@ class QTrainer(Agent):
 
     def train_long_memory(self) -> None:
         """Trains the agent for a longer step saving state-actions to the memory
-     print("stepping")
+        
         Returns:
             None
         """
@@ -172,7 +175,7 @@ class QTrainer(Agent):
         """
         return self.step(state, action, reward, next_state, done)
 
-    def train_step(self, game) -> List[Union[int, float, bool]]:
+    def train_step(self, i, game) -> List[Union[int, float, bool]]:
         """
         Defines a single train step for an agent where the agent performs
         some action in a given state to get next state, current rewards, and
@@ -185,17 +188,13 @@ class QTrainer(Agent):
             (List[Union[int, float], bool, Union[int, float]]) : [current_reward, done, score]
         """
 
-        state_old = self.get_state(game)
+        state_old = self.get_state(i, game)
         final_move = self.get_action(state_old)
         
-        if game.PYGAME_SCREEN_TYPE == "surface":
-            reward, done, score, pixel_data = game.play_step(final_move)
+        reward, done, pixel_data = game.step(i, final_move)
         
-        else:
-            reward, done, score = game.play_step(final_move)
-            
-        state_new = self.get_state(game)
+        state_new = self.get_state(i, game)
         self.train_short_memory(state_old, final_move, reward, state_new, done)
         self.remember(state_old, final_move, reward, state_new, done)
 
-        return [reward, done, score, pixel_data] if game.PYGAME_SCREEN_TYPE == "surface" else [reward, done, score]
+        return reward, done, pixel_data
