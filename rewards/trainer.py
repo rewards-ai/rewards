@@ -49,7 +49,7 @@ class MeanAbsoluteError(torch.nn.Module):
         return torch.mean(torch.abs(x - y))
 
 
-class QTrainer(Agent):
+class Trainer(Agent):
     def __init__(self, model, model_name, checkpoint_folder_path, lr=0.001, gamma=0.9, epsilon=0.2, optimizer="adam", loss="mse"):
         self.lr = lr
         self.gamma = gamma
@@ -64,7 +64,7 @@ class QTrainer(Agent):
         self.optimizer = optimizer_info(self.model.parameters(), lr=self.lr)
         self.checkpoint_folder_path = checkpoint_folder_path
 
-        super(QTrainer, self).__init__(
+        super(Trainer, self).__init__(
             model=self.model,
             lr=self.lr,
             epsilon=self.epsilon,

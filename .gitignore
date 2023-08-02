@@ -16,3 +16,11 @@ dist
 test.py
 models
 setup.py
+test_pred.py
+test_pred_v0.py
+other_test.py
+saved_models
+rewards/__pycache__
+test_pred_v0,py
+test_pred.py
+test.py
